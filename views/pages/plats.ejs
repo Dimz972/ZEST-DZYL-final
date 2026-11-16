@@ -1,0 +1,347 @@
+<section class="bg-gray-50 py-8 antialiased dark:bg-gray-900 md:py-12">
+  <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
+     <div class="mb-8 text-center">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
+        🍽️ Nos Plats
+      </h1>
+      <p class="mt-4 sm:text-sm md:text-lg text-gray-600 dark:text-gray-400">
+        Offrez-vous une escapade gourmande au cœur des Caraïbes : des saveurs vibrantes, des épices envoûtantes et des plats authentiques qui racontent l'histoire des îles.
+      </p>
+    </div>
+
+    <div
+      class="mb-4 items-end justify-between space-y-4 sm:flex sm:space-y-0 md:mb-8"
+    >
+      <div class="relative inline-block text-left">
+        <button
+          type="button"
+          id="filterDropdownButton"
+          class="btn-hover-effect cursor-pointer inline-flex items-center rounded-lg bg-gray-200 px-2 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          <svg
+            class="mr-2 h-5 w-5 text-gray-500 dark:text-gray-300"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M3 4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v2a1 1 0 0 1-.293.707l-7.414 7.414A1 1 0 0 0 13 15.414V19a1 1 0 0 1-1.447.894l-2-1A1 1 0 0 1 9 18v-2.586a1 1 0 0 0-.293-.707L1.293 6.707A1 1 0 0 1 1 6V4z"
+            />
+          </svg>
+          Filtre
+          <svg
+            class="ml-2 h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </button>
+        <div
+          id="filterDropdown"
+          class="hidden absolute left-0 z-10 mt-2 w-48 origin-top-left rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-gray-800"
+        >
+          <form id="filterForm" class="p-4 space-y-3">
+            <label class="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="filterSpicy"
+                class="cursor-pointer form-checkbox h-4 w-4 text-red-600"
+              />
+              <span class="text-sm text-gray-700 dark:text-gray-300"
+                >Épicé</span
+              >
+            </label>
+            <label class="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="filterVegetarian"
+                class="cursor-pointer form-checkbox h-4 w-4 text-green-600"
+              />
+              <span class="text-sm text-gray-700 dark:text-gray-300"
+                >Végétarien</span
+              >
+            </label>
+          </form>
+        </div>
+      </div>
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          const btn = document.getElementById("filterDropdownButton");
+          const dropdown = document.getElementById("filterDropdown");
+          btn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            dropdown.classList.toggle("hidden");
+          });
+          document.addEventListener("click", function (e) {
+            if (!dropdown.classList.contains("hidden")) {
+              dropdown.classList.add("hidden");
+            }
+          });
+          dropdown.addEventListener("click", function (e) {
+            e.stopPropagation();
+          });
+        });
+      </script>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const spicyCheckbox = document.getElementById("filterSpicy");
+        const vegetarianCheckbox = document.getElementById("filterVegetarian");
+        const platCards = document.querySelectorAll("[data-plat-card]");
+
+        function filterPlats() {
+          platCards.forEach((card) => {
+            const isSpicy = card.getAttribute("isSpicy") === "true";
+            const isVegetarian = card.getAttribute("isVegetarian") === "true";
+            let show = true;
+            if (spicyCheckbox.checked && !isSpicy) show = false;
+            if (vegetarianCheckbox.checked && !isVegetarian) show = false;
+            card.style.display = show ? "" : "none";
+          });
+        }
+
+        spicyCheckbox.addEventListener("change", filterPlats);
+        vegetarianCheckbox.addEventListener("change", filterPlats);
+      });
+    </script>
+
+    <% if (plats && plats.length > 0) { %>
+    <div
+      class="mb-4 grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4"
+    >
+      <% plats.forEach(plat => { %>
+      <div
+        class="rounded-lg border border-gray-200 bg-white p-6 shadow-md dark:border-gray-700 dark:bg-gray-800"
+        data-plat-card
+        isSpicy="<%= plat.isSpicy %>"
+        isVegetarian="<%= plat.isVegetarian %>"
+      >
+        <div class="h-56 w-full">
+          
+            <img
+              class="mx-auto h-full w-full object-cover rounded-lg"
+              src="<%= plat.image %>"
+              alt="<%= plat.name %>"
+            />
+          
+        </div>
+        <div class="pt-6">
+          <div class="mb-4 flex items-center justify-between gap-4">
+            <div class="flex flex-wrap gap-1">
+              <% if (plat.isSpicy) { %>
+              <span
+                class="rounded bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900 dark:text-red-300"
+              >
+                Épicé 🌶️
+              </span>
+              <% } %> <% if (plat.isVegetarian) { %>
+              <span
+                class="rounded bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-300"
+              >
+                Végétarien 🌱
+              </span>
+              <% } %>
+            </div>
+            <div class="flex items-center justify-end gap-1">
+              <button
+                data-plat-id="<%= plat._id %>"
+                data-plat-name="<%= plat.name %>"
+                data-plat-price="<%= plat.price %>"
+                data-plat-origin="<%= plat.origin %>"
+                data-plat-ingredients="<%= Array.isArray(plat.ingredients) ? plat.ingredients.join(', ') : '' %>"
+                data-plat-description="<%= plat.description %>"
+                data-plat-image="<%= plat.image %>"
+                data-plat-spicy="<%= plat.isSpicy %>"
+                data-plat-vegetarian="<%= plat.isVegetarian %>"
+                data-drawer-target="readProductDrawer" 
+                data-drawer-show="readProductDrawer" 
+                aria-controls="readProductDrawer"
+                type="button"
+                class="btn-hover-effect cursor-pointer rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white view-details-btn"
+                title="Voir les détails"
+              >
+                <span class="sr-only">Voir les détails du plat</span>
+                <svg
+                  class="h-5 w-5"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke="currentColor"
+                    stroke-width="2"
+                    d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z"
+                  />
+                  <path
+                    stroke="currentColor"
+                    stroke-width="2"
+                    d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                  />
+                </svg>
+              </button>
+
+
+     
+            </div>
+          </div>
+          <a
+
+            class="text-lg font-semibold leading-tight text-gray-900 dark:text-white"
+            ><%= plat.name %></a
+          >
+          <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            <%= plat.description.substring(0, 100) %>...
+          </p>
+          <p class="mt-1 text-sm font-medium text-gray-500 dark:text-gray-400">
+            Origine: <%= plat.origin %>
+          </p>
+          <% if (plat.ingredients && plat.ingredients.length > 0) { %>
+          <div class="mt-2">
+            <p
+              class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1"
+            >
+              Ingrédients:
+            </p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+              <% 
+                // Gérer le cas où les ingrédients sont dans une seule chaîne
+                let displayIngredients = [];
+                if (plat.ingredients.length === 1 && typeof plat.ingredients[0] === 'string' && plat.ingredients[0].includes(',')) {
+                  // Si c'est une seule chaîne avec des virgules, la diviser
+                  displayIngredients = plat.ingredients[0].split(',').map(i => i.trim());
+                } else {
+                  // Sinon utiliser le tableau tel quel
+                  displayIngredients = plat.ingredients;
+                }
+              %>
+              <%= displayIngredients.slice(0, 3).join(', ') %><% if
+              (displayIngredients.length > 3) { %>...<% } %>
+            </p>
+          </div>
+          <% } %>
+          <div class="mt-4 flex items-center justify-between gap-4">
+            <p
+              class="text-2xl font-extrabold leading-tight text-gray-900 dark:text-white"
+            >
+              <%= plat.price %> €
+            </p>
+            <form
+              action="/plats/add-to-cart/<%= plat._id %>"
+              method="POST"
+              class="inline"
+            >
+              <button
+                onclick="addToCart('<%= plat._id %>'); return false;"
+                type="submit"
+                class="btn-hover-effect cursor-pointer inline-flex items-center rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              >
+                <svg
+                  class="-ms-2 me-2 h-5 w-5"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 4h1.5L8 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm.75-3H7.5M11 7H6.312M17 4v6m-3-3h6"
+                  />
+                </svg>
+                Ajouter au panier
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+    <% } else { %>
+      <!-- Message si aucun plat -->
+       <div class="text-center py-12">
+                <h2 class="text-2xl font-semibold text-gray-600 mb-4">Aucun plat disponible</h2>
+                <p class="text-gray-500">Revenez bientôt pour découvrir nos délicieux plats caribéens !</p>
+            </div>
+      </div>
+    <% } %>
+  </div>
+</section>
+
+<!-- Drawer unique pour afficher les détails des plats -->
+<div id="readProductDrawer" class="overflow-y-auto fixed top-0 left-0 z-40 p-4 w-full max-w-xl h-screen bg-white transition-transform -translate-x-full dark:bg-gray-800" tabindex="-1" aria-labelledby="drawer-label" aria-hidden="true">
+  <div>
+    <!-- Header avec bouton de fermeture -->
+    <div class="flex items-center justify-between mb-8">
+      <button type="button" data-drawer-hide="readProductDrawer" aria-controls="readProductDrawer" class="btn-hover-effect cursor-pointer text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 absolute top-2.5 end-2.5 inline-flex dark:hover:bg-gray-600 dark:hover:text-white">
+        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+        </svg>
+        <span class="sr-only">Fermer</span>
+      </button>
+    </div>
+    
+    <!-- Titre et prix du produit -->
+    <h1 id="drawer-plat-name" class="text-2xl font-semibold text-gray-900 sm:text-3xl dark:text-white mb-4">
+      Nom du plat
+    </h1>
+    <p id="drawer-plat-price" class="text-2xl font-extrabold text-gray-900 sm:text-3xl dark:text-white mb-6">
+      0 €
+    </p>
+    
+    <!-- Description de l'origine et des ingrédients -->
+    <p class="mb-4 text-gray-500 dark:text-gray-400">
+      <b>Origine:</b> <span id="drawer-plat-origin">-</span>
+    </p>
+    <p class="mb-4 text-gray-500 dark:text-gray-400">
+      <b>Ingrédients:</b> <span id="drawer-plat-ingredients">-</span>
+    </p>
+    <p class="mb-8 text-gray-500 dark:text-gray-400">
+      <b>Description:</b> <span id="drawer-plat-description">-</span>
+    </p>
+
+    <!-- Détails supplémentaires -->
+    <hr class="my-6 md:my-8 border-gray-200 dark:border-gray-800" />
+    <div id="drawer-plat-badges" class="flex flex-wrap gap-5 mb-6">
+      <!-- Les badges seront ajoutés dynamiquement -->
+    </div>
+
+    <!-- Image du plat -->
+    <div class="shrink-0 max-w-lg lg:max-w-xl mx-auto mb-6">
+      <img id="drawer-plat-image" class="w-full h-80 object-cover object-center rounded-lg" src="" alt="" />
+    </div>
+
+    <!-- Actions du panier et retour -->
+    <div class="flex flex-wrap items-center gap-4 mt-4">
+      <!-- <button onclick="window.location.href='/plats'" type="button" class="cursor-pointer px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 dark:bg-green-400 dark:hover:bg-green-500">
+        Retour à la liste des plats
+      </button> -->
+      <form id="drawer-add-to-cart-form" action="#" method="POST" class="w-full">
+        <button id="drawer-add-to-cart-btn" data-plat-id="" type="submit" class="btn-hover-effect cursor-pointer w-full inline-flex items-center justify-center rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+          <svg class="-ms-2 me-2 h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4h1.5L8 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm.75-3H7.5M11 7H6.312M17 4v6m-3-3h6" />
+          </svg>
+          Ajouter au panier
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

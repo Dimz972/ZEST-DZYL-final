@@ -1,0 +1,165 @@
+<section class="bg-gray-50 py-8 antialiased dark:bg-gray-900 md:py-12">
+  <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
+<% if (cart && cart.length > 0) { %>
+<h2 class="text-3xl text-center font-bold text-gray-900 sm:text-4xl dark:text-white ">Résumé de votre commande</h2>
+<div class="mb-6 mt-6">
+  <% let total = 0; %> <% cart.forEach(function(item) { %>
+  <% 
+    // Déterminer si c'est un plat ou un article
+    const isPlat = item.plat !== undefined;
+    const isArticle = item.article !== undefined;
+    const currentItem = isPlat ? item.plat : item.article;
+    const itemType = isPlat ? 'plat' : 'article';
+  %>
+  <% if (currentItem) { %>
+  <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-md dark:border-gray-700 dark:bg-gray-800 mb-4">
+    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+      <b><%= currentItem.name %></b>
+      <span class="item-badge <%= isPlat ? 'plat-badge' : 'article-badge' %>">
+        <%= isPlat ? 'Plat' : 'Article' %>
+      </span>
+    </h4>
+    <style>
+      .item-badge {
+        font-size: 12px;
+        padding: 3px 8px;
+        border-radius: 4px;
+        margin-left: 8px;
+        font-weight: 500;
+      }
+      .plat-badge {
+        background-color: #dbeafe;
+        color: #1d4ed8;
+      }
+      .article-badge {
+        background-color: #dcfce7;
+        color: #16a34a;
+      }
+    </style>
+    <div class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+      <p><b>Origine:</b> <%= currentItem.origin %></p>
+      <p><b>Prix unitaire:</b> <%= currentItem.price %> €</p>
+      <p><b>Quantité:</b> <%= item.quantity %></p>
+      <p class="text-lg font-semibold text-gray-900 dark:text-white">
+        <b>Sous-total:</b> <%= (currentItem.price * item.quantity).toFixed(2) %> €
+      </p>
+    </div>
+    <% total += currentItem.price * item.quantity; %>
+  </div>
+  <% } %>
+  <% }); %>
+</div>
+<div class="mt-6 p-4 bg-green-50 dark:bg-green-900/20 border-2 border-green-500 rounded-lg">
+  <h2 class="text-xl font-bold text-green-800 dark:text-green-300">Total de la commande: <%= total.toFixed(2) %> €</h2>
+</div>
+
+<div class="mt-8 rounded-lg border border-gray-200 bg-white p-6 shadow-md dark:border-gray-700 dark:bg-gray-800 mb-4">
+  <h3 class="text-2xl text-center font-bold text-gray-900 dark:text-white mb-4">Finaliser votre commande</h3>
+  <form action="/commande/confirm" method="POST" class="space-y-6">
+    <div class="mb-5">
+      <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Choix du mode de livraison:</label>
+      <select
+        name="deliveryMethod"
+        id="deliveryMethod"
+        required
+        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        onchange="toggleAddressField()"
+      >
+        <option value="delivery">Livraison à domicile</option>
+        <option value="pickup">À emporter au restaurant</option>
+      </select>
+    </div>
+
+    <div class="mb-5">
+      <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Vos informations:</label>
+      <input
+        type="text"
+        name="fname"
+        placeholder="Prénom"
+        required
+        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mb-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        value="<%= user && user.fname ? user.fname : '' %>"
+      />
+       <input
+        type="text"
+        name="lname"
+        placeholder="Nom"
+        required
+        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mb-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        value="<%= user && user.lname ? user.lname : '' %>"
+      />
+      <div id="addressField" class="mb-3">
+        <input
+          type="text"
+          name="address"
+          id="address"
+          placeholder="Adresse de livraison"
+          required
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          value="<%= user && user.adresse ? user.adresse : '' %>"
+        />
+      </div>
+      <input
+        type="tel"
+        name="phone"
+        placeholder="Numéro de téléphone"
+        required
+        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mb-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        value="<%= user && user.phone_number ? user.phone_number : '' %>"
+      />
+      <textarea
+        name="notes"
+        placeholder="Instructions spéciales (optionnel)"
+        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 min-h-[60px] dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+      ></textarea>
+    </div>
+
+    <div class="mt-6">
+      <p class="mb-4 text-sm text-gray-600 dark:text-gray-400">
+        Assurez-vous que toutes les informations sont correctes avant de
+        finaliser votre commande.
+      </p>
+      <div class="flex flex-col gap-4">
+        <a
+          href="/plats"
+          class="btn-hover-effect font-medium bg-gray-700 hover:bg-gray-800 dark:bg-gray-400 dark:hover:bg-gray-500 rounded-lg px-4 py-2 text-white transition-colors flex items-center justify-center w-full"
+          >Continuer mes achats</a
+        >
+        <button
+          type="submit"
+          class="btn-hover-effect font-medium cursor-pointer px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 dark:bg-green-400 dark:hover:bg-green-500 transition-colors w-full items-center justify-center"
+        >
+          Paiement sécurisé
+        </button>
+      </div>
+      </form>
+      </div>
+      <% } else { %>
+      <p class="text-gray-600 dark:text-gray-400">Votre panier est vide. <a href="/plats" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">Voir nos plats</a></p>
+      <% } %>
+  </div>
+</section>
+
+<script>
+function toggleAddressField() {
+  const deliveryMethod = document.getElementById('deliveryMethod').value;
+  const addressField = document.getElementById('addressField');
+  const addressInput = document.getElementById('address');
+  
+  if (deliveryMethod === 'pickup') {
+    // Masquer le champ adresse pour les commandes à emporter
+    addressField.style.display = 'none';
+    addressInput.required = false;
+    addressInput.value = ''; // Vider le champ
+  } else {
+    // Afficher le champ adresse pour les livraisons
+    addressField.style.display = 'block';
+    addressInput.required = true;
+  }
+}
+
+// Appeler la fonction au chargement de la page pour définir l'état initial
+document.addEventListener('DOMContentLoaded', function() {
+  toggleAddressField();
+});
+</script>

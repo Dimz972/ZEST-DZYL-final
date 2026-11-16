@@ -1,0 +1,607 @@
+<section class="bg-gray-50 py-8 antialiased dark:bg-gray-900 md:py-12">
+  <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
+    <div class="mb-8 text-center">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
+        📅 Réserver une table
+      </h1>
+      <p class="mt-4 sm:text-sm md:text-lg text-gray-600 dark:text-gray-400">
+        Réservez votre table en quelques clics
+      </p>
+    </div>
+
+    <% if (message) { %>
+      <div class="<%= message.type === 'success' ? 'bg-green-100 border-green-400 text-green-700 dark:bg-green-900 dark:border-green-700 dark:text-green-300' : 'bg-red-100 border-red-400 text-red-700 dark:bg-red-900 dark:border-red-700 dark:text-red-300' %> border rounded-lg px-4 py-3 mb-6 font-medium">
+        <%= message.text %>
+      </div>
+    <% } %>
+
+    <!-- Conteneur principal avec fond blanc -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 md:p-10">
+      <!-- Barre de progression -->
+      <div class="relative flex justify-between mb-12">
+        <!-- Ligne de fond -->
+        <div class="absolute top-5 left-0 right-0 h-0.5 bg-gray-300 dark:bg-gray-600 z-0"></div>
+        <!-- Ligne de progression -->
+        <div id="progressLine" class="absolute top-5 left-0 h-0.5 bg-gradient-to-r from-purple-500 to-purple-700 transition-all duration-500 ease-in-out z-10" style="width: 0%"></div>
+        
+        <!-- Étape 1 -->
+        <div class="step flex flex-col items-center relative z-20 flex-1" id="step1">
+          <div class="step-number w-10 h-10 rounded-full bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center font-semibold text-gray-400 dark:text-gray-500 transition-all duration-300 mb-2">1</div>
+          <div class="step-label text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium text-center">Date</div>
+        </div>
+        
+        <!-- Étape 2 -->
+        <div class="step flex flex-col items-center relative z-20 flex-1" id="step2">
+          <div class="step-number w-10 h-10 rounded-full bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center font-semibold text-gray-400 dark:text-gray-500 transition-all duration-300 mb-2">2</div>
+          <div class="step-label text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium text-center">Heure</div>
+        </div>
+        
+        <!-- Étape 3 -->
+        <div class="step flex flex-col items-center relative z-20 flex-1" id="step3">
+          <div class="step-number w-10 h-10 rounded-full bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center font-semibold text-gray-400 dark:text-gray-500 transition-all duration-300 mb-2">3</div>
+          <div class="step-label text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium text-center">Informations</div>
+        </div>
+      </div>
+
+      <form id="reservationForm">
+        <!-- Section Calendrier -->
+        <div id="calendarContainer" class="mb-8">
+          <div class="bg-gradient-to-r from-purple-500 to-purple-700 rounded-lg p-4 flex items-center justify-between mb-6 shadow-md mt-6">
+            <button type="button" id="prevMonth" class="cursor-pointer text-purple-600 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg px-4 py-2 text-xl font-bold transition-all duration-300 hover:scale-110">‹</button>
+            <h2 id="currentMonth" class="text-white text-xl font-semibold"></h2>
+            <button type="button" id="nextMonth" class="cursor-pointer text-purple-600 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg px-4 py-2 text-xl font-bold transition-all duration-300 hover:scale-110">›</button>
+          </div>
+
+          <div class="grid grid-cols-7 gap-2 sm:gap-3 mb-3">
+            <div class="text-center font-semibold text-purple-600 dark:text-purple-400 text-xs sm:text-sm py-2">Lun</div>
+            <div class="text-center font-semibold text-purple-600 dark:text-purple-400 text-xs sm:text-sm py-2">Mar</div>
+            <div class="text-center font-semibold text-purple-600 dark:text-purple-400 text-xs sm:text-sm py-2">Mer</div>
+            <div class="text-center font-semibold text-purple-600 dark:text-purple-400 text-xs sm:text-sm py-2">Jeu</div>
+            <div class="text-center font-semibold text-purple-600 dark:text-purple-400 text-xs sm:text-sm py-2">Ven</div>
+            <div class="text-center font-semibold text-purple-600 dark:text-purple-400 text-xs sm:text-sm py-2">Sam</div>
+            <div class="text-center font-semibold text-purple-600 dark:text-purple-400 text-xs sm:text-sm py-2">Dim</div>
+          </div>
+
+          <div id="calendarDays" class="grid grid-cols-7 gap-2 sm:gap-3"></div>
+        </div>
+
+        <!-- Section horaires -->
+        <div class="form-section" id="timeSection">
+          <div id="dateDisplay" class="bg-purple-50 dark:bg-purple-900 dark:bg-opacity-30 px-4 py-3 rounded-lg mb-6 mt-6 text-center font-semibold text-purple-700 dark:text-purple-300"></div>
+          <label class="block mb-4 text-gray-900 dark:text-white font-semibold">Choisissez votre horaire <span class="text-red-500">*</span></label>
+          <div id="timeSlotsLoading" class="text-center py-6 text-purple-600 dark:text-purple-400 font-medium">Chargement des disponibilités...</div>
+          <div id="timeSlots" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-6" style="display: none;"></div>
+        </div>
+
+        <!-- Section informations -->
+        <div class="form-section" id="infoSection">
+          <!-- Récapitulatif date et heure -->
+          <div id="reservationSummary" class="bg-purple-50 dark:bg-purple-900 dark:bg-opacity-30 px-4 py-3 rounded-lg mb-6 mt-6 text-center font-semibold text-purple-700 dark:text-purple-300">
+            📅 <span id="summaryDate">-</span> · 🕐 <span id="summaryTime">-</span>
+          </div>
+
+          <div class="mb-6">
+            <label for="personnes" class="mb-2 text-sm font-semibold text-gray-900 dark:text-white">Nombre de personnes <span class="text-red-500">*</span></label>
+            <select id="personnes" name="personnes" required class="cursor-pointer border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white transition-all duration-300">
+              <option value="">Choisir...</option>
+              <option value="1">1 personne</option>
+              <option value="2">2 personnes</option>
+              <option value="3">3 personnes</option>
+              <option value="4">4 personnes</option>
+              <option value="5">5 personnes</option>
+              <option value="6">6 personnes</option>
+              <option value="7">7 personnes</option>
+              <option value="8">8 personnes</option>
+              <option value="9">9 personnes</option>
+              <option value="10">10 personnes ou plus</option>
+            </select>
+          </div>
+
+          <div class="mb-6">
+            <label for="nom" class="block mb-2 text-sm font-semibold text-gray-900 dark:text-white">Nom complet <span class="text-red-500">*</span></label>
+            <input 
+              type="text" 
+              id="nom" 
+              name="nom" 
+              placeholder="Jean Dupont"
+              value="<%= userInfo && userInfo.nom ? userInfo.nom : '' %>" 
+              required
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white transition-all duration-300"
+            >
+          </div>
+
+          <div class="mb-6">
+            <label for="telephone" class="block mb-2 text-sm font-semibold text-gray-900 dark:text-white">Téléphone <span class="text-red-500">*</span></label>
+            <input 
+              type="tel" 
+              id="telephone" 
+              name="telephone" 
+              placeholder="06 12 34 56 78"
+              value="<%= userInfo && userInfo.telephone ? userInfo.telephone : '' %>" 
+              required
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white transition-all duration-300"
+            >
+          </div>
+
+          <div class="mb-6">
+            <label for="email" class="block mb-2 text-sm font-semibold text-gray-900 dark:text-white">Email (optionnel)</label>
+            <input 
+              type="email" 
+              id="email" 
+              name="email" 
+              placeholder="exemple@email.com"
+              value="<%= userInfo && userInfo.email ? userInfo.email : '' %>"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white transition-all duration-300"
+            >
+          </div>
+
+          <div class="mb-6">
+            <label for="commentaire" class="block mb-2 text-sm font-semibold text-gray-900 dark:text-white">Commentaire (optionnel)</label>
+            <input 
+              type="text" 
+              id="commentaire" 
+              name="commentaire" 
+              placeholder="Allergies, demandes spéciales..."
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white transition-all duration-300"
+            >
+          </div>
+
+          <button 
+            type="button" 
+            id="preSubmitBtn" 
+            disabled 
+            class="cursor-pointer w-full bg-gradient-to-r from-purple-500 to-purple-700 text-white font-semibold py-3 px-6 rounded-lg hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+          >
+            Continuer
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+  <!-- Modal de confirmation -->
+  <div id="confirmModal" class="modal">
+    <div class="modal-content bg-white dark:bg-gray-800 rounded-lg p-8 md:p-10 max-w-lg w-11/12 mx-auto shadow-2xl">
+      <div class="text-center mb-8">
+        <div class="text-6xl mb-4">✓</div>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Confirmer votre réservation</h2>
+        <p class="text-gray-600 dark:text-gray-400">Vérifiez les informations ci-dessous</p>
+      </div>
+
+      <div id="confirmationDetails" class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 mb-6 space-y-3"></div>
+
+      <div class="flex gap-3">
+        <button 
+          type="button" 
+          id="cancelBtn" 
+          class="cursor-pointer flex-1 bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-200 font-semibold py-3 px-4 rounded-lg transition-all duration-200"
+        >
+          Modifier
+        </button>
+        <button 
+          type="button" 
+          id="confirmBtn" 
+          class="cursor-pointer flex-1 bg-gradient-to-r from-purple-500 to-purple-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200"
+        >
+          Confirmer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const timeSlots = ['12:00', '12:30', '13:00', '13:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30'];
+    let currentDate = new Date();
+    let selectedDate = null;
+    let selectedTime = null;
+    let availabilityData = {};
+    let currentStep = 1;
+
+    const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 
+                    'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+
+    // Fonction pour formater une date en YYYY-MM-DD sans conversion UTC
+    function formatDateLocal(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function updateProgressBar() {
+      const progressLine = document.getElementById('progressLine');
+      const width = ((currentStep - 1) / 2) * 100;
+      progressLine.style.width = width + '%';
+
+      // Mettre à jour les étapes
+      for (let i = 1; i <= 3; i++) {
+        const step = document.getElementById('step' + i);
+        const stepNumber = step.querySelector('.step-number');
+        const stepLabel = step.querySelector('.step-label');
+        
+        if (i < currentStep) {
+          // Étape complétée
+          stepNumber.className = 'step-number w-10 h-10 rounded-full bg-green-500 border-2 border-transparent flex items-center justify-center font-semibold text-white transition-all duration-300 mb-2';
+        } else if (i === currentStep) {
+          // Étape active
+          stepNumber.className = 'step-number w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-purple-700 border-2 border-transparent flex items-center justify-center font-semibold text-white transition-all duration-300 mb-2 scale-110';
+          stepLabel.className = 'step-label text-xs sm:text-sm text-purple-600 dark:text-purple-400 font-semibold text-center';
+        } else {
+          // Étape non commencée
+          stepNumber.className = 'step-number w-10 h-10 rounded-full bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center font-semibold text-gray-400 dark:text-gray-500 transition-all duration-300 mb-2';
+          stepLabel.className = 'step-label text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium text-center';
+        }
+      }
+    }
+
+    async function loadAvailability(date) {
+      const dateStr = formatDateLocal(date);
+      
+      try {
+        const response = await fetch(`/reservation/api/disponibilite?date=${dateStr}&heure=all`);
+        const data = await response.json();
+        
+        if (data.slots) {
+          availabilityData[dateStr] = data.slots;
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des disponibilités:', error);
+      }
+    }
+
+    function renderCalendar() {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      
+      document.getElementById('currentMonth').textContent = `${months[month]} ${year}`;
+      
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      const prevLastDay = new Date(year, month, 0);
+      
+      const firstDayIndex = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+      const lastDayIndex = lastDay.getDay() === 0 ? 6 : lastDay.getDay() - 1;
+      
+      const nextDays = 6 - lastDayIndex;
+      
+      const calendarDays = document.getElementById('calendarDays');
+      calendarDays.innerHTML = '';
+      
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      // Jours du mois précédent
+      for (let i = firstDayIndex; i > 0; i--) {
+        const day = prevLastDay.getDate() - i + 1;
+        const dayEl = document.createElement('div');
+        dayEl.className = 'aspect-square flex flex-col items-center justify-center rounded-lg text-gray-400 dark:text-gray-600 cursor-not-allowed p-2 text-sm sm:text-base';
+        dayEl.textContent = day;
+        calendarDays.appendChild(dayEl);
+      }
+      
+      // Jours du mois actuel
+      for (let i = 1; i <= lastDay.getDate(); i++) {
+        const dayDate = new Date(year, month, i);
+        const dayEl = document.createElement('div');
+        dayEl.textContent = i;
+        
+        if (dayDate < today) {
+          dayEl.className = 'aspect-square flex flex-col items-center justify-center rounded-lg text-gray-400 dark:text-gray-600 cursor-not-allowed line-through p-2 text-sm sm:text-base';
+        } else {
+          // Classes de base pour les jours disponibles
+          let baseClasses = 'calendar-day-hover aspect-square flex flex-col items-center justify-center rounded-lg cursor-pointer transition-all duration-300 font-medium border-2 p-2 text-sm sm:text-base text-gray-700 dark:text-gray-300';
+          
+          // Vérifier si c'est la date sélectionnée
+          if (selectedDate && dayDate.toDateString() === selectedDate.toDateString()) {
+            dayEl.className = baseClasses + ' bg-gradient-to-r from-purple-500 to-purple-700 text-white font-bold scale-105 border-transparent';
+          } else if (dayDate.toDateString() === today.toDateString()) {
+            // Si c'est aujourd'hui mais pas sélectionné
+            dayEl.className = baseClasses + ' border-transparent font-bold';
+          } else {
+            // Jour normal
+            dayEl.className = baseClasses + ' border-transparent';
+          }
+          
+          dayEl.onclick = () => selectDate(dayDate);
+          
+          // Charger les disponibilités pour ce jour
+          loadAvailability(dayDate);
+        }
+        
+        calendarDays.appendChild(dayEl);
+      }
+      
+      // Jours du mois suivant
+      for (let i = 1; i <= nextDays; i++) {
+        const dayEl = document.createElement('div');
+        dayEl.className = 'aspect-square flex flex-col items-center justify-center rounded-lg text-gray-400 dark:text-gray-600 cursor-not-allowed p-2 text-sm sm:text-base';
+        dayEl.textContent = i;
+        calendarDays.appendChild(dayEl);
+      }
+    }
+
+    async function selectDate(date) {
+      selectedDate = date;
+      selectedTime = null;
+      currentStep = 2;
+      
+      const dateStr = formatDateLocal(date);
+      
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      document.getElementById('dateDisplay').textContent = 
+        `📅 ${date.toLocaleDateString('fr-FR', options)}`;
+      
+      renderCalendar();
+      updateProgressBar();
+      
+      document.getElementById('calendarContainer').style.display = 'none';
+      document.getElementById('timeSection').classList.add('active');
+      document.getElementById('infoSection').classList.remove('active');
+      
+      // Charger les disponibilités
+      document.getElementById('timeSlotsLoading').style.display = 'block';
+      document.getElementById('timeSlots').style.display = 'none';
+      
+      await renderTimeSlots(dateStr);
+      
+      document.getElementById('timeSlotsLoading').style.display = 'none';
+      document.getElementById('timeSlots').style.display = 'grid';
+    }
+
+    async function renderTimeSlots(dateStr) {
+      const timeSlotsContainer = document.getElementById('timeSlots');
+      timeSlotsContainer.innerHTML = '';
+      
+      // Charger les disponibilités si pas déjà en cache
+      if (!availabilityData[dateStr]) {
+        try {
+          const response = await fetch(`/reservation/api/disponibilite?date=${dateStr}&heure=all`);
+          const data = await response.json();
+          if (data.slots) {
+            availabilityData[dateStr] = data.slots;
+          }
+        } catch (error) {
+          console.error('Erreur:', error);
+        }
+      }
+      
+      const slots = availabilityData[dateStr] || {};
+      
+      // Vérifier si c'est aujourd'hui
+      const maintenant = new Date();
+      const aujourdhui = formatDateLocal(maintenant);
+      const estAujourdhui = dateStr === aujourdhui;
+      
+      timeSlots.forEach(time => {
+        const slotEl = document.createElement('div');
+        
+        const availability = slots[time] || { disponible: true, placesRestantes: 50 };
+        let placesRestantes = availability.placesRestantes;
+        
+        // Vérifier si l'heure est passée pour aujourd'hui
+        let heurePassee = false;
+        if (estAujourdhui) {
+          const [heure, minutes] = time.split(':').map(Number);
+          const heureActuelle = maintenant.getHours();
+          const minutesActuelles = maintenant.getMinutes();
+          
+          if (heure < heureActuelle || (heure === heureActuelle && minutes <= minutesActuelles)) {
+            heurePassee = true;
+            placesRestantes = 0;
+          }
+        }
+        
+        let badgeClass = 'bg-green-500';
+        let availabilityText = `${placesRestantes} places`;
+        
+        if (heurePassee) {
+          slotEl.className = 'p-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg text-center cursor-not-allowed opacity-40 bg-gray-100 dark:bg-gray-700 transition-all duration-300';
+          availabilityText = 'Passé';
+          slotEl.innerHTML = `
+            <div class="text-gray-900 dark:text-white font-semibold">${time}</div>
+            <div class="text-xs mt-1 flex items-center justify-center gap-1">
+              <span class="inline-block w-2 h-2 rounded-full ${badgeClass}"></span>
+              <span class="text-gray-600 dark:text-gray-400">${availabilityText}</span>
+            </div>
+          `;
+        } else if (placesRestantes === 0) {
+          slotEl.className = 'p-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg text-center cursor-not-allowed opacity-40 bg-gray-100 dark:bg-gray-700 transition-all duration-300';
+          availabilityText = 'Complet';
+          slotEl.innerHTML = `
+            <div class="text-gray-900 dark:text-white font-semibold">${time}</div>
+            <div class="text-xs mt-1 flex items-center justify-center gap-1">
+              <span class="inline-block w-2 h-2 rounded-full ${badgeClass}"></span>
+              <span class="text-gray-600 dark:text-gray-400">${availabilityText}</span>
+            </div>
+          `;
+        } else {
+          // Définir les classes selon la disponibilité
+          if (placesRestantes <= 10) {
+            badgeClass = 'bg-red-500';
+          } else if (placesRestantes <= 25) {
+            badgeClass = 'bg-orange-500';
+          }
+          
+          // Vérifier si c'est l'heure sélectionnée
+          if (selectedTime === time) {
+            slotEl.className = 'p-3 border-2 border-transparent rounded-lg text-center cursor-pointer bg-gradient-to-r from-purple-500 to-purple-700 text-white font-semibold transition-all duration-300';
+            slotEl.innerHTML = `
+              <div class="font-semibold">${time}</div>
+              <div class="text-xs mt-1 flex items-center justify-center gap-1">
+                <span class="inline-block w-2 h-2 rounded-full bg-white"></span>
+                <span class="text-purple-100">${availabilityText}</span>
+              </div>
+            `;
+          } else {
+            slotEl.className = 'time-slot-hover p-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg text-center cursor-pointer transition-all duration-300 font-medium';
+            slotEl.innerHTML = `
+              <div class="time-text text-gray-900 dark:text-white font-semibold transition-colors duration-300">${time}</div>
+              <div class="text-xs mt-1 flex items-center justify-center gap-1">
+                <span class="availability-badge inline-block w-2 h-2 rounded-full ${badgeClass} transition-colors duration-300"></span>
+                <span class="availability-text text-gray-600 dark:text-gray-400 transition-colors duration-300">${availabilityText}</span>
+              </div>
+            `;
+          }
+          
+          slotEl.onclick = () => selectTime(time);
+        }
+        
+        timeSlotsContainer.appendChild(slotEl);
+      });
+    }
+
+    function selectTime(time) {
+      selectedTime = time;
+      currentStep = 3;
+      
+      renderTimeSlots(formatDateLocal(selectedDate));
+      updateProgressBar();
+      
+      document.getElementById('timeSection').classList.remove('active');
+      document.getElementById('infoSection').classList.add('active');
+      
+      // Mettre à jour le récapitulatif
+      updateReservationSummary();
+      
+      updateSubmitButton();
+    }
+
+    function updateReservationSummary() {
+      if (selectedDate && selectedTime) {
+        const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+        const dateFormatted = selectedDate.toLocaleDateString('fr-FR', options);
+        
+        document.getElementById('summaryDate').textContent = dateFormatted;
+        document.getElementById('summaryTime').textContent = selectedTime;
+      }
+    }
+
+    function updateSubmitButton() {
+      const submitBtn = document.getElementById('preSubmitBtn');
+      const nom = document.getElementById('nom').value;
+      const tel = document.getElementById('telephone').value;
+      const personnes = document.getElementById('personnes').value;
+      
+      submitBtn.disabled = !(selectedDate && selectedTime && nom && tel && personnes);
+    }
+
+    // Événements pour mettre à jour le bouton
+    ['nom', 'telephone', 'personnes'].forEach(id => {
+      document.getElementById(id).addEventListener('input', updateSubmitButton);
+    });
+
+    document.getElementById('preSubmitBtn').onclick = function() {
+      showConfirmationModal();
+    };
+
+    function showConfirmationModal() {
+      const modal = document.getElementById('confirmModal');
+      const details = document.getElementById('confirmationDetails');
+      
+      const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      const dateFormatted = selectedDate.toLocaleDateString('fr-FR', dateOptions);
+      
+      const personnes = document.getElementById('personnes').value;
+      const nom = document.getElementById('nom').value;
+      const telephone = document.getElementById('telephone').value;
+      const email = document.getElementById('email').value;
+      const commentaire = document.getElementById('commentaire').value;
+      
+      details.innerHTML = `
+        <div class="flex justify-between py-3 border-b border-gray-200 dark:border-gray-600">
+          <span class="text-gray-600 dark:text-gray-400 font-medium">📅 Date</span>
+          <span class="text-gray-900 dark:text-white font-semibold">${dateFormatted}</span>
+        </div>
+        <div class="flex justify-between py-3 border-b border-gray-200 dark:border-gray-600">
+          <span class="text-gray-600 dark:text-gray-400 font-medium">🕐 Heure</span>
+          <span class="text-gray-900 dark:text-white font-semibold">${selectedTime}</span>
+        </div>
+        <div class="flex justify-between py-3 border-b border-gray-200 dark:border-gray-600">
+          <span class="text-gray-600 dark:text-gray-400 font-medium">👥 Nombre de personnes</span>
+          <span class="text-gray-900 dark:text-white font-semibold">${personnes} personne(s)</span>
+        </div>
+        <div class="flex justify-between py-3 border-b border-gray-200 dark:border-gray-600">
+          <span class="text-gray-600 dark:text-gray-400 font-medium">👤 Nom</span>
+          <span class="text-gray-900 dark:text-white font-semibold">${nom}</span>
+        </div>
+        <div class="flex justify-between py-3 border-b border-gray-200 dark:border-gray-600">
+          <span class="text-gray-600 dark:text-gray-400 font-medium">📞 Téléphone</span>
+          <span class="text-gray-900 dark:text-white font-semibold">${telephone}</span>
+        </div>
+        ${email ? `
+        <div class="flex justify-between py-3 border-b border-gray-200 dark:border-gray-600">
+          <span class="text-gray-600 dark:text-gray-400 font-medium">📧 Email</span>
+          <span class="text-gray-900 dark:text-white font-semibold">${email}</span>
+        </div>
+        ` : ''}
+        ${commentaire ? `
+        <div class="flex justify-between py-3">
+          <span class="text-gray-600 dark:text-gray-400 font-medium">💬 Commentaire</span>
+          <span class="text-gray-900 dark:text-white font-semibold">${commentaire}</span>
+        </div>
+        ` : ''}
+      `;
+      
+      modal.classList.add('active');
+    }
+
+    document.getElementById('cancelBtn').onclick = function() {
+      const modal = document.getElementById('confirmModal');
+      modal.classList.remove('active');
+    };
+
+    document.getElementById('confirmBtn').onclick = function() {
+      submitReservation();
+    };
+
+    function submitReservation() {
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = '/reservation';
+      
+      const fields = {
+        date: formatDateLocal(selectedDate),
+        heure: selectedTime,
+        personnes: document.getElementById('personnes').value,
+        nom: document.getElementById('nom').value,
+        telephone: document.getElementById('telephone').value,
+        email: document.getElementById('email').value,
+        commentaire: document.getElementById('commentaire').value
+      };
+      
+      for (const [name, value] of Object.entries(fields)) {
+        if (value) {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = name;
+          input.value = value;
+          form.appendChild(input);
+        }
+      }
+      
+      document.body.appendChild(form);
+      form.submit();
+    }
+
+    document.getElementById('prevMonth').onclick = () => {
+      currentDate.setMonth(currentDate.getMonth() - 1);
+      renderCalendar();
+    };
+
+    document.getElementById('nextMonth').onclick = () => {
+      currentDate.setMonth(currentDate.getMonth() + 1);
+      renderCalendar();
+    };
+
+    // Fermer le modal en cliquant à l'extérieur
+    document.getElementById('confirmModal').onclick = function(e) {
+      if (e.target === this) {
+        this.classList.remove('active');
+      }
+    };
+
+    // Initialisation
+    renderCalendar();
+    updateProgressBar();
+  </script>

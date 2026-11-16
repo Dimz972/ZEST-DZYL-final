@@ -1,0 +1,274 @@
+
+<section class="bg-gray-50 py-8 antialiased dark:bg-gray-900 md:py-16">
+  <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
+    <div class="commandes-historique">
+      <h1 class="text-2xl font-bold text-gray-800 dark:text-white text-center mb-8">Gestion des commandes</h1>
+  
+  <% if (orderHistory && orderHistory.length > 0) { %>
+    <!-- Section Commandes en cours -->
+    <div class="commandes-en-cours mb-12">
+      <h3 class="text-2xl font-semibold text-gray-800 dark:text-white mb-6 pb-2">
+        🔄 Commandes en cours
+      </h3>
+      
+      <% 
+        const commandesEnCours = orderHistory.filter(commande => 
+          commande.statut !== 'livree' && commande.statut !== 'terminee' && 
+          commande.statut !== 'confirmee' && commande.statut !== 'prete'
+        );
+      %>
+      
+      <% if (commandesEnCours.length > 0) { %>
+        <% commandesEnCours.forEach(function(commande, index) { %>
+          <div class="commande-item bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6 border-l-4 border-yellow-500">
+        <div class="commande-header flex justify-between items-start mb-4">
+          <strong class="text-lg font-semibold text-gray-800 dark:text-gray-200">Commande #<%= commande._id ? commande._id.toString().substr(-6) : (index + 1) %></strong>
+          <div class="text-right">
+            <span class="date text-sm text-gray-600 dark:text-gray-400 block">
+              <%= commande.orderDisplayDate || 'Date non disponible' %>
+            </span>
+            <% if (commande.orderDisplayTime) { %>
+            <span class="time text-sm text-gray-600 dark:text-gray-400">
+              <%= commande.orderDisplayTime %>
+            </span>
+            <% } %>
+          </div>
+        </div>
+        
+        <div class="commande-info">
+          <p><strong>Prénom et nom:</strong> <%= commande.name || 'Nom non disponible' %></p>
+          <p><strong>Adresse:</strong> <%= commande.address || 'Adresse non disponible' %></p>
+          <p><strong>Téléphone:</strong> <%= commande.phone || 'Téléphone non disponible' %></p>
+        </div>
+        
+        <div class="commande-details space-y-3">
+          <div>
+            <strong>Articles commandés:</strong>
+            <div class="mt-1">
+              <% if (commande.cart && commande.cart.length > 0) { %>
+                <% commande.cart.forEach(function(item, idx) { %>
+                  <span class="inline-block bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-2 py-1 rounded text-sm mr-2 mb-1">
+                    <% try { %>
+                      <% if (item.type === 'article' && item.article) { %>
+                        <%= (item.article.name || 'Nom article manquant') %> (x<%= item.quantity %>)
+                        <span class="text-xs bg-green-100 text-green-800 px-1 py-0.5 rounded ml-1">Article</span>
+                      <% } else if (item.type === 'plat' && item.plat) { %>
+                        <%= (item.plat.name || 'Nom plat manquant') %> (x<%= item.quantity %>)
+                        <span class="text-xs bg-blue-100 text-blue-800 px-1 py-0.5 rounded ml-1">Plat</span>
+                      <% } else if (item.plat) { %>
+                        <%= (item.plat.name || 'Nom plat manquant') %> (x<%= item.quantity %>)
+                        <span class="text-xs bg-blue-100 text-blue-800 px-1 py-0.5 rounded ml-1">Plat</span>
+                      <% } else if (item.article) { %>
+                        <%= (item.article.name || 'Nom article manquant') %> (x<%= item.quantity %>)
+                        <span class="text-xs bg-green-100 text-green-800 px-1 py-0.5 rounded ml-1">Article</span>
+                      <% } else if (item.name) { %>
+                        <%= item.name %> (x<%= item.quantity %>)
+                        <span class="text-xs bg-purple-100 text-purple-800 px-1 py-0.5 rounded ml-1">Direct</span>
+                      <% } else { %>
+                        Item sans structure (x<%= item.quantity %>)
+                      <% } %>
+                    <% } catch(e) { %>
+                      Erreur: <%= e.message %>
+                    <% } %>
+                  </span>
+                <% }); %>
+              <% } else { %>
+                <span class="text-gray-500 dark:text-gray-400">Détails non disponibles</span>
+              <% } %>
+            </div>
+          </div>
+          
+          <p>
+            <strong>Méthode de livraison:</strong> 
+            <span class="ml-2 px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded text-sm">
+              <%= commande.deliveryMethod === 'delivery' ? 'Livraison' : commande.deliveryMethod === 'pickup' ? 'À emporter' : 'Non spécifiée' %>
+            </span>
+          </p>
+          
+          <% if (commande.methodePaiement) { %>
+          <p>
+            <strong>Méthode de paiement:</strong> 
+            <span class="ml-2 px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded text-sm">
+              <%= commande.methodePaiement === 'card' ? 'Carte bancaire' : 'Espèces' %>
+            </span>
+          </p>
+          <% } %>
+          
+          <div class="flex justify-between items-center">
+            <div>
+              <strong>Statut actuel:</strong>
+              <span class="statut ml-2 px-3 py-1 rounded-full text-sm font-medium
+                <%= commande.statut === 'en_preparation' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' : '' %>
+                <%= commande.statut === 'en_cours' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' : '' %>">
+                <%= commande.statut === 'en_preparation' ? 'En préparation' : commande.statut === 'en_cours' ? 'En cours' : commande.statut || 'En préparation' %>
+              </span>
+            </div>
+            
+            <!-- Formulaire de changement de statut pour les admins -->
+            <% if (user && user.role === 'admin') { %>
+            <form method="POST" action="/commande/statut/<%= commande._id %>" class="flex items-center space-x-2">
+              <select name="nouveauStatut" class="cursor-pointer px-3 py-1 border border-gray-300 rounded text-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
+                <option value="en_preparation" <%= commande.statut === 'en_preparation' ? 'selected' : '' %>>En préparation</option>
+                <option value="en_cours" <%= commande.statut === 'en_cours' ? 'selected' : '' %>>En cours</option>
+                <option value="prete" <%= commande.statut === 'prete' ? 'selected' : '' %>>Prête</option>
+                <option value="terminee" <%= commande.statut === 'terminee' ? 'selected' : '' %>>Livrée</option>
+              </select>
+              <button type="submit" class="btn-hover-effect cursor-pointer px-3 py-1 bg-orange-500 hover:bg-orange-600 text-white text-sm rounded">
+                Modifier
+              </button>
+            </form>
+            <% } %>
+          </div>
+          
+          <% if (commande.total) { %>
+          <p class="text-lg font-semibold text-gray-800 dark:text-gray-200">
+            <strong>Total:</strong> <span class="text-orange-600 dark:text-orange-400"><%= commande.total.toFixed(2) %>€</span>
+          </p>
+          <% } %>
+        </div>
+      </div>
+    <% }); %>
+  <% } else { %>
+    <div class="text-center py-8 bg-gray-50 dark:bg-gray-700 rounded-lg">
+      <p class="text-gray-500 dark:text-gray-400">Aucune commande en cours.</p>
+    </div>
+  <% } %>
+</div>
+
+<!-- Section Commandes terminées -->
+<div class="commandes-terminees">
+  <div class="flex justify-between items-center mb-6">
+    <h3 class="text-2xl font-semibold text-gray-800 dark:text-white pb-2">
+      ✅ Commandes terminées
+    </h3>
+    
+    <!-- Bouton pour supprimer l'historique des commandes terminées (admin uniquement) -->
+    <% if (user && user.role === 'admin') { %>
+    <form method="POST" action="/commande/historique/clear" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer toutes les commandes terminées ? Cette action est irréversible.')">
+      <button type="submit" class="btn-hover-effect cursor-pointer px-4 py-2 bg-red-700 rounded-lg hover:bg-red-800 font-medium focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800 text-white text-sm rounded-lg flex items-center space-x-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+        </svg>
+        <span>Vider l'historique</span>
+      </button>
+    </form>
+    <% } %>
+  </div>
+  
+  <% 
+    const commandesTerminees = orderHistory.filter(commande => 
+      commande.statut === 'livree' || commande.statut === 'terminee' || 
+      commande.statut === 'confirmee' || commande.statut === 'prete'
+    );
+  %>
+  
+  <% if (commandesTerminees.length > 0) { %>
+    <% commandesTerminees.forEach(function(commande, index) { %>
+      <div class="commande-item bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6 border-l-4 border-green-500">
+        <div class="commande-header flex justify-between items-start mb-4">
+          <strong class="text-lg font-semibold text-gray-800 dark:text-gray-200">Commande #<%= commande._id ? commande._id.toString().substr(-6) : (index + 1) %></strong>
+          <div class="text-right">
+            <span class="date text-sm text-gray-600 dark:text-gray-400 block">
+              <%= commande.orderDisplayDate || 'Date non disponible' %>
+            </span>
+            <% if (commande.orderDisplayTime) { %>
+            <span class="time text-sm text-gray-600 dark:text-gray-400">
+              <%= commande.orderDisplayTime %>
+            </span>
+            <% } %>
+          </div>
+        </div>
+        
+        <div class="commande-info">
+          <p><strong>Prénom et nom:</strong> <%= commande.name || 'Nom non disponible' %></p>
+          <p><strong>Adresse:</strong> <%= commande.address || 'Adresse non disponible' %></p>
+          <p><strong>Téléphone:</strong> <%= commande.phone || 'Téléphone non disponible' %></p>
+        </div>
+        
+        <div class="commande-details space-y-3">
+          <div>
+            <strong class="text-gray-700 dark:text-gray-300">Articles commandés:</strong>
+            <div class="mt-1">
+              <% if (commande.cart && commande.cart.length > 0) { %>
+                <% commande.cart.forEach(function(item, idx) { %>
+                  <span class="inline-block bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-2 py-1 rounded text-sm mr-2 mb-1">
+                    <% try { %>
+                      <% if (item.type === 'article' && item.article) { %>
+                        <%= (item.article.name || 'Nom article manquant') %> (x<%= item.quantity %>)
+                        <span class="text-xs bg-green-100 text-green-800 px-1 py-0.5 rounded ml-1">Article</span>
+                      <% } else if (item.type === 'plat' && item.plat) { %>
+                        <%= (item.plat.name || 'Nom plat manquant') %> (x<%= item.quantity %>)
+                        <span class="text-xs bg-blue-100 text-blue-800 px-1 py-0.5 rounded ml-1">Plat</span>
+                      <% } else if (item.plat) { %>
+                        <%= (item.plat.name || 'Nom plat manquant') %> (x<%= item.quantity %>)
+                        <span class="text-xs bg-blue-100 text-blue-800 px-1 py-0.5 rounded ml-1">Plat</span>
+                      <% } else if (item.article) { %>
+                        <%= (item.article.name || 'Nom article manquant') %> (x<%= item.quantity %>)
+                        <span class="text-xs bg-green-100 text-green-800 px-1 py-0.5 rounded ml-1">Article</span>
+                      <% } else if (item.name) { %>
+                        <%= item.name %> (x<%= item.quantity %>)
+                        <span class="text-xs bg-purple-100 text-purple-800 px-1 py-0.5 rounded ml-1">Direct</span>
+                      <% } else { %>
+                        Item sans structure (x<%= item.quantity %>)
+                      <% } %>
+                    <% } catch(e) { %>
+                      Erreur: <%= e.message %>
+                    <% } %>
+                  </span>
+                <% }); %>
+              <% } else { %>
+                <span class="text-gray-500 dark:text-gray-400">Détails non disponibles</span>
+              <% } %>
+            </div>
+          </div>
+          
+          <p class="text-gray-700 dark:text-gray-300">
+            <strong>Méthode de livraison:</strong> 
+            <span class="ml-2 px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded text-sm">
+              <%= commande.deliveryMethod === 'delivery' ? 'Livraison' : commande.deliveryMethod === 'pickup' ? 'À emporter' : 'Non spécifiée' %>
+            </span>
+          </p>
+          
+          <% if (commande.methodePaiement) { %>
+          <p class="text-gray-700 dark:text-gray-300">
+            <strong>Méthode de paiement:</strong> 
+            <span class="ml-2 px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded text-sm">
+              <%= commande.methodePaiement === 'card' ? 'Carte bancaire' : 'Espèces' %>
+            </span>
+          </p>
+          <% } %>
+          
+          <p class="text-gray-700 dark:text-gray-300">
+            <strong>Statut:</strong>
+            <span class="statut ml-2 px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+              <%= commande.statut === 'prete' ? 'Prête' : commande.statut === 'terminee' ? 'Livrée' : commande.statut === 'livree' ? 'Livrée' : commande.statut === 'confirmee' ? 'Confirmée' : 'Livrée' %>
+            </span>
+          </p>
+          
+          <% if (commande.total) { %>
+          <p class="text-lg font-semibold text-gray-800 dark:text-gray-200">
+            <strong>Total:</strong> <span class="text-orange-600 dark:text-orange-400"><%= commande.total.toFixed(2) %>€</span>
+          </p>
+          <% } %>
+        </div>
+      </div>
+    <% }); %>
+  <% } else { %>
+    <div class="text-center py-8 bg-gray-50 dark:bg-gray-700 rounded-lg">
+      <p class="text-gray-500 dark:text-gray-400">Aucune commande terminée.</p>
+    </div>
+  <% } %>
+</div>
+
+<% } else { %>
+    <div class="text-center">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+                    <h2 class="text-2xl font-semibold text-gray-600 dark:text-gray-300 mb-4">Aucune commande trouvée</h2>
+                    <p class="text-gray-500 dark:text-gray-400 mb-6">Les commandes apparaîtront ici une fois effectuées !</p>
+                </div>
+            </div>
+        <% } %>
+  </div>
+</section>
+  </div>
+</section>

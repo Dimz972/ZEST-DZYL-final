@@ -1,0 +1,162 @@
+<section class="bg-gray-50 py-8 antialiased dark:bg-gray-900 md:py-12">
+  <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
+    <h1 class="text-3xl font-bold text-center mb-8 text-purple-600">Réservation en cours</h1>
+    
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden p-8">
+      <% if (reservation) { %>
+      <div class="grid md:grid-cols-2 gap-6 mb-6">
+        <div class="space-y-4">
+          <h2 class="text-xl font-semibold text-gray-800">Informations de réservation</h2>
+          <div class="bg-gray-50 rounded-lg p-4 space-y-2">
+            <p class="text-gray-700">
+              <strong class="text-gray-900">Date :</strong>
+              <%= 
+                (() => {
+                  if (typeof reservation.date === 'string') {
+                    const [year, month, day] = reservation.date.split('-').map(Number);
+                    const d = new Date(year, month - 1, day);
+                    return d.toLocaleDateString('fr-FR', {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    });
+                  }
+                  return new Date(reservation.date).toLocaleDateString('fr-FR', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  });
+                })()
+              %>
+            </p>
+            <p class="text-gray-700">
+              <strong class="text-gray-900">Heure :</strong>
+              <%= reservation.heure %>
+            </p>
+            <p class="text-gray-700">
+              <strong class="text-gray-900">Nombre de personnes :</strong>
+              <%= reservation.personnes %> personne<%= reservation.personnes > 1 ? 's' : '' %>
+            </p>
+            <p class="text-gray-700">
+              <strong class="text-gray-900">Nom :</strong>
+              <%= reservation.nom %>
+            </p>
+            <p class="text-gray-700">
+              <strong class="text-gray-900">Téléphone :</strong>
+              <%= reservation.telephone %>
+            </p>
+            <% if (reservation.email) { %>
+            <p class="text-gray-700">
+              <strong class="text-gray-900">Email :</strong>
+              <%= reservation.email %>
+            </p>
+            <% } %>
+            <% if (reservation.commentaire) { %>
+            <p class="text-gray-700">
+              <strong class="text-gray-900">Commentaire :</strong>
+              <%= reservation.commentaire %>
+            </p>
+            <% } %>
+            <p class="text-gray-700">
+              <strong class="text-gray-900">Statut :</strong>
+              <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset <%= 
+                reservation.statut === 'confirmee' ? 'bg-green-50 text-green-700 ring-green-600/20' : 
+                reservation.statut === 'en_attente' ? 'bg-yellow-50 text-yellow-700 ring-yellow-600/20' : 
+                'bg-red-50 text-red-700 ring-red-600/20' 
+              %>">
+                <%= reservation.statut === 'confirmee' ? '✓ Confirmée' : 
+                    reservation.statut === 'en_attente' ? '⏳ En attente' : 
+                    '✗ Annulée' %>
+              </span>
+            </p>
+            <% if (reservation.createdAt) { %>
+            <p class="text-gray-700 text-sm">
+              <strong class="text-gray-900">Réservée le :</strong>
+              <%= new Date(reservation.createdAt).toLocaleDateString('fr-FR') %> 
+              à <%= new Date(reservation.createdAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) %>
+            </p>
+            <% } %>
+          </div>
+        </div>
+        
+        <div class="space-y-4">
+          <h2 class="text-xl font-semibold text-gray-800">Détails de votre visite</h2>
+          <div class="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-6 space-y-4">
+            <div class="flex items-center space-x-3">
+              <div class="flex-shrink-0">
+                <div class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-100 text-purple-600">
+                  🍽️
+                </div>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-gray-900">Restaurant Zest' D'Zyl</p>
+                <p class="text-sm text-gray-600">Cuisine caribéenne authentique</p>
+              </div>
+            </div>
+            
+            <div class="border-t border-purple-200 pt-4">
+              <h3 class="text-sm font-semibold text-gray-900 mb-2">📍 Adresse</h3>
+              <p class="text-sm text-gray-700">9 Rue des Linandes Beiges</p>
+              <p class="text-sm text-gray-700">95000 Cergy, France</p>
+            </div>
+            
+            <div class="border-t border-purple-200 pt-4">
+              <h3 class="text-sm font-semibold text-gray-900 mb-2">📞 Contact</h3>
+              <p class="text-sm text-gray-700">Tél : 01 23 45 67 89</p>
+              <p class="text-sm text-gray-700">Email : contact@zestdzyl.fr</p>
+            </div>
+            
+            <div class="border-t border-purple-200 pt-4">
+              <div class="bg-white rounded-lg p-3">
+                <p class="text-xs text-gray-600">
+                  💡 <strong>Conseil :</strong> Nous vous recommandons d'arriver 5 minutes avant votre heure de réservation. 
+                  En cas d'empêchement, merci de nous prévenir au moins 2 heures à l'avance.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <% if (reservation.statut !== 'annulee') { %>
+        <form action="/reservation/annuler-ma-reservation/<%= reservation._id %>" method="POST" class="inline-block">
+          <button
+            type="submit"
+            onclick="return confirm('Êtes-vous sûr de vouloir annuler cette réservation ?')"
+            class="w-full sm:w-auto px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+          >
+            Annuler la réservation
+          </button>
+        </form>
+        <% } %>
+
+        <a
+          href="/"
+          class="w-full sm:w-auto px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium text-center"
+        >
+          Retour à l'accueil
+        </a>
+      </div>
+
+      <% } else { %>
+        <div class="text-center py-12">
+          <div class="mb-6">
+            <span class="text-6xl">🍽️</span>
+          </div>
+          <h2 class="text-2xl font-semibold text-gray-600 mb-4">Aucune réservation en cours</h2>
+          <p class="text-gray-500 mb-6">Vous n'avez pas de réservation en cours pour le moment.</p>
+          <a
+            href="/reservation"
+            class="inline-block px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
+          >
+            Réserver une table
+          </a>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</section>
+

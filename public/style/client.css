@@ -1,0 +1,165 @@
+/* Fix footer en bas de page */
+html,
+body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+main>section {
+    flex: 1;
+}
+
+/*Effet de survol pour les boutons */
+.btn-hover-effect {
+    transition: all 0.3s ease !important;
+}
+
+.btn-hover-effect:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Effet de flou pour les modales ajouter et modifier admin */
+#defaultModal,
+#updateModal {
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+
+/*Style et animations pour la page de réservation */
+/* Animations pour les étapes du formulaire */
+.form-section {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease;
+    pointer-events: none;
+    max-height: 0;
+    overflow: hidden;
+}
+
+.form-section.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    max-height: 2000px;
+}
+
+/* Hover pour les dates du calendrier */
+.calendar-day-hover:hover {
+    background-color: rgb(243 232 255) !important;
+    color: rgb(126 34 206) !important;
+    transform: scale(1.1) !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+    border-color: rgb(168 85 247) !important;
+    font-weight: 700 !important;
+}
+
+.dark .calendar-day-hover:hover {
+    background-color: rgba(88, 28, 135, 0.3) !important;
+    color: rgb(216 180 254) !important;
+}
+
+/* Hover pour les créneaux horaires */
+.time-slot-hover:hover {
+    border-color: rgb(168 85 247) !important;
+    background-image: linear-gradient(to bottom right, rgb(168 85 247), rgb(126 34 206)) !important;
+    transform: translateY(-4px) !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1) !important;
+}
+
+.time-slot-hover:hover .time-text {
+    color: white !important;
+}
+
+.time-slot-hover:hover .availability-badge {
+    background-color: white !important;
+}
+
+.time-slot-hover:hover .availability-text {
+    color: rgb(243 232 255) !important;
+}
+
+/* Hover pour le bouton Continuer, Modifier, Confirmer */
+#preSubmitBtn:hover,
+#cancelBtn:hover,
+#confirmBtn:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Animations modal */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+}
+
+.modal.active {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s;
+}
+
+.modal-content {
+    animation: slideUp 0.3s;
+}
+
+
+
+/* Animation de slide-up */
+section {
+    animation: slideUpAnimation 1s ease-out;
+}
+
+@keyframes slideUpAnimation {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

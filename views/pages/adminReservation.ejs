@@ -1,0 +1,158 @@
+<section class="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5">
+  <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
+    <a href="/dashboard/admin" class="btn-hover-effect font-medium inline-flex items-center text-white px-4 py-2 rounded-lg mb-6 bg-blue-700 hover:bg-blue-800">
+            <i class="fas fa-arrow-left mr-2"></i> Retour au dashboard
+        </a>
+    <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
+      <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Liste des réservations</h1>
+      </div>
+
+      <!-- Statistiques -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
+        <div class="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900 dark:to-purple-800 rounded-lg shadow p-6 text-center border border-purple-200 dark:border-purple-700">
+          <h3 class="text-4xl font-bold text-purple-600 dark:text-purple-300 mb-2"><%= reservations.length %></h3>
+          <p class="text-gray-700 dark:text-gray-300 text-sm font-medium">Total réservations</p>
+        </div>
+        <div class="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900 dark:to-green-800 rounded-lg shadow p-6 text-center border border-green-200 dark:border-green-700">
+          <h3 class="text-4xl font-bold text-green-600 dark:text-green-300 mb-2"><%= reservations.filter(r => r.statut === 'confirmee').length %></h3>
+          <p class="text-gray-700 dark:text-gray-300 text-sm font-medium">Confirmées</p>
+        </div>
+        <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900 dark:to-yellow-800 rounded-lg shadow p-6 text-center border border-yellow-200 dark:border-yellow-700">
+          <h3 class="text-4xl font-bold text-yellow-600 dark:text-yellow-300 mb-2"><%= reservations.filter(r => r.statut === 'en_attente').length %></h3>
+          <p class="text-gray-700 dark:text-gray-300 text-sm font-medium">En attente</p>
+        </div>
+        <div class="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900 dark:to-red-800 rounded-lg shadow p-6 text-center border border-red-200 dark:border-red-700">
+          <h3 class="text-4xl font-bold text-red-600 dark:text-red-300 mb-2"><%= reservations.filter(r => r.statut === 'annulee').length %></h3>
+          <p class="text-gray-700 dark:text-gray-300 text-sm font-medium">Annulées</p>
+        </div>
+      </div>
+
+      <!-- Tableau -->
+      <% if (reservations.length === 0) { %>
+       <div class="text-center">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+                    <h2 class="text-2xl font-semibold text-gray-600 dark:text-gray-300 mb-4">Aucune réservation trouvée</h2>
+                    <p class="text-gray-500 dark:text-gray-400 mb-6">Les réservations apparaîtront ici une fois effectuées !</p>
+                </div>
+            </div>
+      <% } else { %>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+              <tr>
+                <th class="px-4 py-3">Date</th>
+                <th class="px-4 py-3">Heure</th>
+                <th class="px-4 py-3">Nom</th>
+                <th class="px-4 py-3">Personnes</th>
+                <th class="px-4 py-3">Téléphone</th>
+                <th class="px-4 py-3">Email</th>
+                <th class="px-4 py-3">Statut</th>
+                <th class="px-4 py-3">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% reservations.forEach(reservation => { %>
+                <tr class="border-b dark:border-gray-700 align-top">
+                  <td class="px-4 py-3 font-medium text-gray-900 dark:text-white">
+                    <%= 
+                      (() => {
+                        if (typeof reservation.date === 'string') {
+                          const [year, month, day] = reservation.date.split('-');
+                          const d = new Date(year, month - 1, day);
+                          return d.toLocaleDateString('fr-FR');
+                        }
+                        return new Date(reservation.date).toLocaleDateString('fr-FR');
+                      })()
+                    %>
+                  </td>
+                  <td class="px-4 py-3"><%= reservation.heure %></td>
+                  <td class="px-4 py-3 font-medium text-gray-900 dark:text-white"><%= reservation.nom %></td>
+                  <td class="px-4 py-3"><%= reservation.personnes %></td>
+                  <td class="px-4 py-3"><%= reservation.telephone %></td>
+                  <td class="px-4 py-3"><%= reservation.email || '-' %></td>
+                  <td class="px-4 py-3">
+                    <% if (reservation.statut === 'confirmee') { %>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                        Confirmée
+                      </span>
+                    <% } else if (reservation.statut === 'en_attente') { %>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
+                        En attente
+                      </span>
+                    <% } else { %>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
+                        Annulée
+                      </span>
+                    <% } %>
+                  </td>
+                  <td class="px-4 py-3 space-y-2">
+                    <% if (reservation.statut !== 'annulee') { %>
+                      <form action="/reservation/annuler/<%= reservation._id %>" method="POST" class="inline-block" onsubmit="return confirmCancel(event)">
+                        <button type="submit" title="Annuler cette réservation" class="btn-hover-effect cursor-pointer mr-2 inline-flex items-center justify-center p-2 text-sm font-medium text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 focus:ring-4 focus:ring-yellow-300 dark:bg-yellow-500 dark:hover:bg-yellow-600 dark:focus:ring-yellow-800">
+                               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                              </svg>
+                            </button>
+                      </form>
+                    <% } %>
+                    
+                    <form action="/reservation/delete/<%= reservation._id %>" method="POST" class="inline-block" onsubmit="return confirmDelete(event, 'réservation')">
+                      <button type="submit" title="Supprimer cette reservation" class="btn-hover-effect cursor-pointer inline-flex items-center justify-center p-2 text-sm font-medium text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+                               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                              </svg>
+                            </button>
+                    </form>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+<script>
+// Fonction de confirmation d'annulation avec SweetAlert2
+function confirmCancel(event) {
+    event.preventDefault();
+    Swal.fire({
+        title: 'Êtes-vous sûr ?',
+        text: 'Voulez-vous vraiment annuler cette réservation ?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ca8a04',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Oui, annuler',
+        cancelButtonText: 'Non'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            event.target.submit();
+        }
+    });
+    return false;
+}
+
+// Fonction de confirmation de suppression avec SweetAlert2
+function confirmDelete(event, itemType) {
+    event.preventDefault();
+    Swal.fire({
+        title: 'Êtes-vous sûr ?',
+        text: `Voulez-vous vraiment supprimer définitivement cette ${itemType} ?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Oui, supprimer',
+        cancelButtonText: 'Annuler'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            event.target.submit();
+        }
+    });
+    return false;
+}
+</script>

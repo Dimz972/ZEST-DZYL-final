@@ -1,0 +1,101 @@
+
+<section class="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5">
+    <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
+        <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
+            
+            <!-- En-tête -->
+            <div class="border-b border-gray-200 dark:border-gray-700 p-6">
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2 text-center">Bienvenue dans l'espace d'administration de ZEST' D'ZYL</h1>
+            </div>
+
+            <!-- Contenu principal -->
+            <div class="p-6">
+                <!-- Grille des cartes d'accès rapide -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    
+                    <!-- Carte Utilisateurs -->
+                    <a href="/users/admin" class="btn-hover-effect block p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:border-blue-300 transition duration-300 dark:bg-gray-700 dark:border-gray-600 dark:hover:border-blue-500">
+                        <div class="flex items-center justify-between mb-3">
+                            <svg class="w-10 h-10 text-blue-600 dark:text-blue-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M16 19h4a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-2m-2.236-4a3 3 0 1 0 0-4M3 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+                        </div>
+                        <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">Utilisateurs</h5>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Gérer les comptes utilisateurs</p>
+                    </a>
+
+                    <!-- Carte Plats -->
+                    <a href="/plats/admin" class="btn-hover-effect block p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:border-green-300 transition duration-300 dark:bg-gray-700 dark:border-gray-600 dark:hover:border-green-500">
+                        <div class="flex items-center justify-between mb-3">
+                            <svg class="w-10 h-10 text-green-600 dark:text-green-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h8M6 10h12M8 14h8M6 18h12"/>
+                                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none"/>
+                            </svg>
+                        </div>
+                        <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">Plats</h5>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Gérer le menu des plats</p>
+                    </a>
+
+                    <!-- Carte Réservations -->
+                    <a href="/reservation/admin" class="btn-hover-effect block p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:border-purple-300 transition duration-300 dark:bg-gray-700 dark:border-gray-600 dark:hover:border-purple-500">
+                        <div class="flex items-center justify-between mb-3">
+                            <svg class="w-10 h-10 text-purple-600 dark:text-purple-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h16m-8-3V4M7 7V4m10 3V4M5 20h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Zm3-7h0v0h0v0Zm4 0h0v0h0v0Zm4 0h0v0h0v0Zm-8 4h0v0h0v0Zm4 0h0v0h0v0Zm4 0h0v0h0v0Z"/></svg>
+                        </div>
+                        <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">Réservations</h5>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Consulter les réservations</p>
+                    </a>
+
+                    <!-- Carte Articles -->
+                    <a href="/articles/admin" class="btn-hover-effect block p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:border-orange-300 transition duration-300 dark:bg-gray-700 dark:border-gray-600 dark:hover:border-orange-500">
+                        <div class="flex items-center justify-between mb-3">
+                            <svg class="w-10 h-10 text-orange-600 dark:text-orange-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10V6a3 3 0 0 1 3-3v0a3 3 0 0 1 3 3v4m3-2 .917 11.923A1 1 0 0 1 17.92 21H6.08a1 1 0 0 1-.997-1.077L6 8h12Z"/></svg>
+                        </div>
+                        <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">Articles</h5>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Gérer la boutique</p>
+                    </a>
+
+                    <!-- Carte Recettes -->
+                    <a href="/recettes/admin" class="btn-hover-effect block p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:border-red-300 transition duration-300 dark:bg-gray-700 dark:border-gray-600 dark:hover:border-red-500">
+                        <div class="flex items-center justify-between mb-3">
+                            <svg class="w-10 h-10 text-red-600 dark:text-red-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.03v13m0-13c-2.819-.831-4.715-1.076-8.029-1.023A.99.99 0 0 0 3 6v11c0 .563.466 1.014 1.03 1.007 3.122-.043 5.018.212 7.97 1.023m0-13c2.819-.831-4.715-1.076 8.029-1.023A.99.99 0 0 1 21 6v11c0 .563-.466 1.014-1.03 1.007-3.122-.043-5.018.212-7.97 1.023"/></svg>
+                        </div>
+                        <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">Recettes</h5>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Gérer les recettes</p>
+                    </a>
+
+                    <!-- Carte Événements -->
+                    <a href="/events/admin" class="btn-hover-effect block p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:border-yellow-300 transition duration-300 dark:bg-gray-700 dark:border-gray-600 dark:hover:border-yellow-500">
+                        <div class="flex items-center justify-between mb-3">
+                            <svg class="w-10 h-10 text-yellow-600 dark:text-yellow-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v4m0 10v4m8-8h-4M8 12H4m13.657-5.657l-2.828 2.828M9.172 14.828l-2.829 2.829m11.314 0-2.828-2.829M9.172 9.172 6.343 6.343"/>
+                                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="currentColor"/>
+                            </svg>
+                        </div>
+                        <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">Événements</h5>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Gérer les événements</p>
+                    </a>
+
+                    <!-- Carte Messages Contact -->
+                    <a href="/contacts/admin" class="btn-hover-effect block p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:border-pink-300 transition duration-300 dark:bg-gray-700 dark:border-gray-600 dark:hover:border-pink-500">
+                        <div class="flex items-center justify-between mb-3">
+                            <svg class="w-10 h-10 text-pink-600 dark:text-pink-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 13h3.439a.991.991 0 0 1 .908.6 3.978 3.978 0 0 0 7.306 0 .99.99 0 0 1 .908-.6H20M4 13v6a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-6M4 13l2-9h12l2 9M9 7h6m-7 3h8"/></svg>
+                        </div>
+                        <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">Messages</h5>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Consulter les messages</p>
+                    </a>
+
+                </div>
+
+                <!-- Section informations -->
+                <div class="mt-8 p-6 bg-blue-50 border border-blue-200 rounded-lg dark:bg-blue-900 dark:border-blue-700">
+                    <div class="flex items-start">
+                        <svg class="w-6 h-6 text-blue-600 dark:text-blue-400 mr-3 mt-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11h2v5m-2 0h4m-2.592-8.5h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+                        <div>
+                            <h2 class="text-lg font-semibold text-blue-900 dark:text-blue-200 mb-2">Espace d'administration</h2>
+                            <p class="text-blue-700 dark:text-blue-300">Utilisez les cartes ci-dessus pour accéder rapidement aux différentes sections de gestion du site ZEST' D'ZYL.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>

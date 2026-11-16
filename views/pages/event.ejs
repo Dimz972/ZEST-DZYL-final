@@ -1,0 +1,222 @@
+<!-- Titre de la section -->
+<section class="bg-gray-50 py-8 antialiased dark:bg-gray-900 md:py-16">
+  <div class="max-w-screen-xl px-4 mx-auto 2xl:px-0">
+    <div class="mb-8 text-center">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
+        🎉 Nos Événements
+      </h1>
+      <p class="mt-4 sm:text-sm md:text-lg text-gray-600 dark:text-gray-400">
+        Vibrez aux rythmes des Caraïbes : danse, musique live, ateliers de cuisine et dégustations authentiques pour une immersion festive et gourmande au cœur de la culture antillaise.
+      </p>
+    </div>
+    <div class="mb-4 items-end justify-between space-y-4 sm:flex sm:space-y-0 md:mb-8">
+      <div class="relative inline-block text-left">
+      <button
+        type="button"
+        id="filterDropdownButton"
+        class="btn-hover-effect cursor-pointer inline-flex items-center rounded-lg bg-gray-200 px-2 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        <svg
+        class="mr-2 h-5 w-5 text-gray-500 dark:text-gray-300"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M3 4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v2a1 1 0 0 1-.293.707l-7.414 7.414A1 1 0 0 0 13 15.414V19a1 1 0 0 1-1.447.894l-2-1A1 1 0 0 1 9 18v-2.586a1 1 0 0 0-.293-.707L1.293 6.707A1 1 0 0 1 1 6V4z"
+        />
+        </svg>
+        Catégories
+        <svg
+        class="ml-2 h-4 w-4"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M19 9l-7 7-7-7"
+        />
+        </svg>
+      </button>
+      <div id="filterDropdown" class="hidden absolute left-0 z-10 mt-2 w-48 origin-top-left rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-gray-800">
+        <form id="filterForm" class="p-4 space-y-3">
+        <% const uniqueCategories = [...new Set(events.map(event => event.category))]; %>
+        <% uniqueCategories.forEach(category => { %>
+          <label class="flex items-center space-x-2">
+          <input type="checkbox" data-category="<%= category %>" class="cursor-pointer category-filter form-checkbox h-4 w-4 text-blue-600"/>
+          <span class="text-sm text-gray-700 dark:text-gray-300"><%= category.charAt(0).toUpperCase() + category.slice(1) %></span>
+          </label>
+        <% }); %>
+        </form>
+      </div>
+      </div>
+
+      <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        const btn = document.getElementById("filterDropdownButton");
+        const dropdown = document.getElementById("filterDropdown");
+        const categoryFilters = document.querySelectorAll('.category-filter');
+        
+        btn.addEventListener("click", function(e) {
+        e.stopPropagation();
+        dropdown.classList.toggle("hidden");
+        });
+
+        document.addEventListener("click", function() {
+        if (!dropdown.classList.contains("hidden")) {
+          dropdown.classList.add("hidden");
+        }
+        });
+
+        dropdown.addEventListener("click", function(e) {
+        e.stopPropagation();
+        });
+
+        function filterEvents() {
+        const selectedCategories = Array.from(categoryFilters)
+          .filter(checkbox => checkbox.checked)
+          .map(checkbox => checkbox.dataset.category);
+        
+        document.querySelectorAll('.grid > div[data-category]').forEach(card => {
+          if (selectedCategories.length === 0) {
+          card.style.display = "";
+          return;
+          }
+          card.style.display = selectedCategories.includes(card.dataset.category) ? "" : "none";
+        });
+        }
+
+        categoryFilters.forEach(filter => {
+        filter.addEventListener("change", filterEvents);
+        });
+      });
+      </script>
+    </div>
+
+
+    <!-- Grille de cartes d'événements -->
+    <% if (events && events.length > 0) { %>
+      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <% events.forEach(event => { %>
+          <!-- Carte événement -->
+          <div data-category="<%= event.category %>" class="bg-white border border-gray-200 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow duration-300">
+            <!-- Image de l'événement -->
+            <div class="relative">
+              <img class="w-full h-48 object-cover" src="<%= event.image %>" alt="<%= event.title %>" />
+              <% if (event.badge) { %>
+                <div class="absolute top-3 right-3 bg-<%= event.badge === 'populaire' ? 'red' : event.badge === 'nouveau' ? 'green' : 'purple' %>-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
+                  <%= event.badge.charAt(0).toUpperCase() + event.badge.slice(1) %>
+                </div>
+              <% } %>
+            </div>
+            
+            <!-- Contenu de la carte -->
+            <div class="p-6">
+              <!-- Titre -->
+              <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                <%= event.title %>
+              </h2>
+              
+              <!-- Date et heure -->
+              <div class="flex items-center mb-3 text-gray-600 dark:text-gray-400">
+                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-sm"><%= new Date(event.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %></span>
+              </div>
+              
+              <div class="flex items-center mb-4 text-gray-600 dark:text-gray-400">
+                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-sm"><%= event.startTime %> - <%= event.endTime %></span>
+              </div>
+              
+              <!-- Description -->
+              <p class="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-3">
+                <%= event.description %>
+              </p>
+              
+              <!-- Participants -->
+              <div class="flex items-center mb-4 text-gray-600 dark:text-gray-400">
+                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"></path>
+                </svg>
+                <span class="text-sm"><%= event.currentParticipants %>/<%= event.maxParticipants %> participants</span>
+              </div>
+              
+              <!-- Prix et bouton -->
+              <div class="flex items-center justify-between">
+                <span class="text-2xl font-bold text-gray-900 dark:text-white">
+                  <%= event.price %>€
+                </span>
+                <% if (event.currentParticipants >= event.maxParticipants) { %>
+                  <button class="btn-hover-effect bg-gray-400 text-white px-4 py-2 rounded-lg text-sm font-medium cursor-not-allowed" disabled>
+                    Complet
+                  </button>
+                <% } else { %>
+                  <button 
+                    class="btn-hover-effect cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 reserve-btn" 
+                    data-event-id="<%= event._id %>"
+                  >
+                    Réserver
+                  </button>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <!-- Message si aucun événement -->
+             <div class="text-center py-12">
+                <h2 class="text-2xl font-semibold text-gray-600 mb-4">Aucun événement n'est programmé</h2>
+                <p class="text-gray-500">Revenez bientôt pour découvrir nos prochains événements !</p>
+             </div>
+    <% } %>
+  </div>
+</section>
+
+
+<!-- Script pour la réservation -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const reserveBtns = document.querySelectorAll('.reserve-btn');
+    
+    reserveBtns.forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const eventId = this.dataset.eventId;
+            
+            try {
+                const response = await fetch(`/events/reserve/${eventId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert(data.message);
+                    // Recharger la page pour mettre à jour les compteurs
+                    window.location.reload();
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Une erreur est survenue lors de la réservation');
+            }
+        });
+    });
+});
+</script>

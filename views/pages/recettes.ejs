@@ -1,0 +1,170 @@
+
+<section class="bg-gray-50 py-8 antialiased dark:bg-gray-900 md:py-12">
+  <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
+     <div class="mb-8 text-center">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
+        👨‍🍳 Nos Recettes
+      </h1>
+      <p class="mt-4 sm:text-sm md:text-lg text-gray-600 dark:text-gray-400">
+        Découvrez les secrets des saveurs caribéennes à travers des recettes authentiques, simples et ensoleillées, à reproduire chez vous pour un vrai goût des îles.
+      </p>
+    </div>
+    <div class="mb-4 items-end justify-between space-y-4 sm:flex sm:space-y-0 md:mb-8">
+        <div class="relative inline-block text-left">
+            <button
+                type="button"
+                id="filterDropdownButton"
+                class="btn-hover-effect cursor-pointer inline-flex items-center rounded-lg bg-gray-200 px-2 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                aria-haspopup="true"
+                aria-expanded="false"
+            >
+                <svg
+                    class="mr-2 h-5 w-5 text-gray-500 dark:text-gray-300"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M3 4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v2a1 1 0 0 1-.293.707l-7.414 7.414A1 1 0 0 0 13 15.414V19a1 1 0 0 1-1.447.894l-2-1A1 1 0 0 1 9 18v-2.586a1 1 0 0 0-.293-.707L1.293 6.707A1 1 0 0 1 1 6V4z"
+                    />
+                </svg>
+                Filtre
+                <svg
+                    class="ml-2 h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M19 9l-7 7-7-7"
+                    />
+                </svg>
+            </button>
+            <div id="filterDropdown" class="hidden absolute left-0 z-10 mt-2 w-48 origin-top-left rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-gray-800">
+                <form id="filterForm" class="p-4 space-y-3">
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" id="filterSpicy" class="form-checkbox h-4 w-4 text-red-600"/>
+                        <span class="text-sm text-gray-700 dark:text-gray-300">Épicé</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" id="filterVegetarian" class="form-checkbox h-4 w-4 text-green-600"/>
+                        <span class="text-sm text-gray-700 dark:text-gray-300">Végétarien</span>
+                    </label>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const btn = document.getElementById("filterDropdownButton");
+                const dropdown = document.getElementById("filterDropdown");
+                const spicyCheckbox = document.getElementById("filterSpicy");
+                const vegetarianCheckbox = document.getElementById("filterVegetarian");
+                
+                // Toggle dropdown
+                btn.addEventListener("click", function(e) {
+                    e.stopPropagation();
+                    dropdown.classList.toggle("hidden");
+                });
+
+                document.addEventListener("click", function() {
+                    if (!dropdown.classList.contains("hidden")) {
+                        dropdown.classList.add("hidden");
+                    }
+                });
+
+                dropdown.addEventListener("click", function(e) {
+                    e.stopPropagation();
+                });
+
+                // Filter functionality
+                function filterRecipes() {
+                    const recipeCards = document.querySelectorAll(".grid > div");
+                    
+                    recipeCards.forEach(card => {
+                        const isSpicy = card.querySelector(".text-red-800") !== null;
+                        const isVegetarian = card.querySelector(".text-green-800") !== null;
+                        
+                        let show = true;
+                        if (spicyCheckbox.checked && !isSpicy) show = false;
+                        if (vegetarianCheckbox.checked && !isVegetarian) show = false;
+                        
+                        card.style.display = show ? "" : "none";
+                    });
+                }
+
+                spicyCheckbox.addEventListener("change", filterRecipes);
+                vegetarianCheckbox.addEventListener("change", filterRecipes);
+            });
+        </script>
+    </div> 
+
+    <% if (recettes && recettes.length > 0) { %>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <% recettes.forEach(recette => { %>
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                        <% if (recette.image) { %>
+                            <img src="<%= recette.image %>" alt="<%= recette.name %>" class="w-full h-48 object-cover">
+                        <% } else { %>
+                            <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+                                <span class="text-gray-500">Aucune image</span>
+                            </div>
+                        <% } %>
+                        
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold mb-2 text-gray-800"><%= recette.name %></h3>
+                            <p class="text-gray-600 mb-2"><%= recette.description.substring(0, 100) %>...</p>
+
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="text-sm text-gray-500">
+                                    <i class="fas fa-clock"></i> <%= recette.preparationTime + recette.cookingTime %> min
+                                </span>
+                                <span class="text-sm text-gray-500">
+                                    <i class="fas fa-utensils"></i> <%= recette.servings %> personne(s)
+                                </span>
+                            </div>
+                            
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                                    <%= recette.difficulty %>
+                                </span>
+                                <div class="flex flex-wrap gap-1">
+                                    <% if (recette.isVegetarian) { %>
+                                        <span class="rounded bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-300">
+                                            Végétarien 🌱
+                                        </span>
+                                    <% } %>
+                                    <% if (recette.isSpicy) { %>
+                                        <span class="rounded bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900 dark:text-red-300">
+                                            Épicé 🌶️
+                                        </span>
+                                    <% } %>
+                                </div>
+                            </div>
+
+                            <a href="/recettes/<%= recette._id %>" class="btn-hover-effect font-medium block w-full text-center text-white py-2 px-4 rounded-lg bg-green-700 hover:bg-green-800">
+                                Voir la recette
+                            </a>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        <% } else { %>
+            <!-- Message si aucune recette -->
+            <div class="text-center py-12">
+                <h2 class="text-2xl font-semibold text-gray-600 mb-4">Aucune recette disponible</h2>
+                <p class="text-gray-500">Revenez bientôt pour découvrir nos délicieuses recettes caribéennes !</p>
+            </div>
+        <% } %>
+    </div>
+</section>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+
+

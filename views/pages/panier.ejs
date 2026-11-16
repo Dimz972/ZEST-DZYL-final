@@ -1,0 +1,96 @@
+<section class="bg-gray-50 py-8 antialiased dark:bg-gray-900 md:py-16">
+  <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
+    <h2 class="text-3xl text-center font-bold text-gray-900 sm:text-4xl dark:text-white">Votre panier</h2>
+
+    <div class="slide-up mt-6 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
+      <div class="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-4xl">
+        <div class="space-y-6">
+          <% if (cart && cart.length > 0) { %>
+            <% let total = 0; %>
+            <% cart.forEach(function(item, index) { %>
+              <% 
+                // Déterminer si c'est un plat ou un article
+                const isPlat = item.plat !== undefined;
+                const isArticle = item.article !== undefined;
+                const currentItem = isPlat ? item.plat : item.article;
+                const itemType = isPlat ? 'plat' : 'article';
+              %>
+              <% if (currentItem) { %>
+              <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
+                <div class="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0">
+                  
+                    <img class="h-40 w-40 rounded-lg" src="<%= currentItem.image %>" alt="<%= currentItem.name %>" />
+                  
+                  <div class="w-full min-w-0 flex-1 space-y-4 md:order-2 md:max-w-md">
+                    <h3 class="text-base font-medium text-gray-900 dark:text-white">
+                      <%= currentItem.name %>
+                      <span class="ml-2 text-xs bg-<%= isPlat ? 'blue' : 'green' %>-100 text-<%= isPlat ? 'blue' : 'green' %>-800 px-2 py-1 rounded">
+                        <%= isPlat ? 'Plat' : 'Article' %>
+                      </span>
+                    </h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400"><b>Origine:</b> <%= currentItem.origin %></p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400"><b>Épicé:</b> <%= currentItem.isSpicy ? 'Oui' : 'Non' %></p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400"><b>Végétarien:</b> <%= currentItem.isVegetarian ? 'Oui' : 'Non' %></p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400"><b>Ingrédients:</b> <%= currentItem.ingredients.join(', ') %></p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400"><b>Description:</b> <%= currentItem.description %></p>
+                  </div>
+                  <div class="flex items-center justify-between md:order-3 md:justify-end">
+                    <div class="flex items-center">
+                      <span class="text-sm text-gray-900 dark:text-white mr-2">Quantité:</span>
+                      <span class="w-10 text-center text-sm font-medium text-gray-900 dark:text-white"><%= item.quantity %></span>
+                    </div>
+                    <div class="text-end md:order-4 md:w-32 ml-4">
+                      <p class="text-base font-bold text-gray-900 dark:text-white"><%= (currentItem.price * item.quantity).toFixed(2) %> €</p>
+                      <p class="text-xs text-gray-500 dark:text-gray-400">Prix unitaire: <%= currentItem.price %> €</p>
+                    </div>
+                  </div>
+                  <div class="flex flex-col gap-2 md:order-5">
+                    <% 
+                      // Déterminer la route spécifique selon le type d'élément
+                      const deleteRoute = itemType === 'article' ? 
+                        `/panier/delete-article-from-cart/${currentItem._id}` : 
+                        `/panier/delete-plat-from-cart/${currentItem._id}`;
+                    %>
+                    <form action="<%= deleteRoute %>?_method=DELETE" method="POST">
+                      <input type="hidden" name="<%= itemType %>Id" value="<%= currentItem._id %>" />
+                      <% if (typeof csrfToken !== 'undefined') { %>
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                      <% } %>
+                        <!-- Bouton de suppression avec icône à modifier pour uniformiser tous les boutons suppressions -->
+                         <button type="submit" title="Supprimer" class="btn-hover-effect cursor-pointer inline-flex items-center justify-center p-2 text-sm font-medium text-white bg-red-700 border border-transparent rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+                           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                           </svg>
+                         </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <% total += currentItem.price * item.quantity; %>
+              <% } else { %>
+                <!-- Élément de panier invalide ignoré -->
+                <% console.log('Élément de panier invalide détecté:', item); %>
+              <% } %>
+            <% }); %>
+            <div class="mt-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+              <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Total du panier: <%= total.toFixed(2) %> €</h2>
+            </div>
+            <div class="mt-6 flex flex-col gap-4">
+              <a href="/plats" class="btn-hover-effect flex items-center justify-center rounded-lg bg-blue-700 px-5 py-2.5 font-medium text-white hover:bg-blue-800 w-full">Voir nos plats</a>
+              <a href="/boutique" class="btn-hover-effect flex items-center justify-center rounded-lg bg-purple-700 px-5 py-2.5 font-medium text-white hover:bg-purple-800 w-full">Voir nos articles</a>
+               <a href="/commande" class="btn-hover-effect flex items-center justify-center rounded-lg bg-green-700 px-5 py-2.5 font-medium text-white hover:bg-green-800 w-full">Passer commande</a>
+            </div>
+          <% } else { %>
+            <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 text-center">
+              <p class="text-lg text-gray-900 dark:text-white">Votre panier est vide.</p>
+              <div class="mt-4 flex flex-col gap-4">
+                <a href="/plats" class="btn-hover-effect flex items-center justify-center rounded-lg bg-blue-600 px-5 py-2.5 font-medium text-white hover:bg-blue-700 w-full">Voir nos plats</a>
+                <a href="/boutique" class="btn-hover-effect flex items-center justify-center rounded-lg bg-purple-700 px-5 py-2.5 font-medium text-white hover:bg-purple-800 w-full">Voir nos articles</a>
+              </div>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

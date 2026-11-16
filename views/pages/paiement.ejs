@@ -1,0 +1,164 @@
+<section class="bg-gray-50 py-8 antialiased dark:bg-gray-900 md:py-12">
+  <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
+<div class="order-summary">
+  <h2 class="text-3xl text-center font-bold text-gray-900 sm:text-4xl dark:text-white mb-6">Récapitulatif de la commande</h2>
+
+  <% if (orderSummary && orderSummary.cart && orderSummary.cart.length > 0) { %>
+
+  <div class="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-md">
+    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Informations </h3>
+    <div class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+      <p><b>Prénom:</b> <%= orderSummary.fname || '' %></p>
+      <p><b>Nom:</b> <%= orderSummary.lname || '' %></p>
+      <p>
+        <b>Mode:</b> <%= orderSummary.deliveryMethod === 'delivery' ? 'Livraison à domicile' : 'À emporter' %>
+      </p>
+      <% if (orderSummary.deliveryMethod === 'delivery') { %>
+      <p><b>Adresse:</b> <%= orderSummary.address %></p>
+      <% } %>
+      <p><b>Téléphone:</b> <%= orderSummary.phone %></p>
+      <% if (orderSummary.notes) { %>
+      <p><b>Instructions:</b> <%= orderSummary.notes %></p>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="overflow-x-auto bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-md mb-6">
+    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+      <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <tr>
+          <th class="px-6 py-3">Produit</th>
+          <th class="px-6 py-3 text-center">Quantité</th>
+          <th class="px-6 py-3 text-right">Prix Unitaire</th>
+          <th class="px-6 py-3 text-right">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+      <% orderSummary.cart.forEach(function(item) { %>
+      <% 
+        // Déterminer si c'est un plat ou un article
+        const isPlat = item.plat !== undefined;
+        const isArticle = item.article !== undefined;
+        const currentItem = isPlat ? item.plat : item.article;
+        const itemType = isPlat ? 'plat' : 'article';
+      %>
+      <% if (currentItem) { %>
+      <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+        <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">
+          <%= currentItem.name %>
+          <span class="text-xs px-2 py-1 rounded <%= isPlat ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300' : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' %> ml-2">
+            <%= isPlat ? 'Plat' : 'Article' %>
+          </span>
+        </td>
+        <td class="px-6 py-4 text-center">
+          <%= item.quantity %>
+        </td>
+        <td class="px-6 py-4 text-right">
+          <%= currentItem.price.toFixed(2) %> €
+        </td>
+        <td class="px-6 py-4 text-right font-medium">
+          <%= (currentItem.price * item.quantity).toFixed(2) %> €
+        </td>
+      </tr>
+      <% } %>
+      <% }); %>
+      </tbody>
+      <tfoot>
+        <tr class="bg-green-50 dark:bg-green-900/20 border-t-2 border-green-500">
+          <td
+            colspan="3"
+            class="px-6 py-4 text-right font-bold text-green-800 dark:text-green-300"
+          >
+            Total de la commande:
+          </td>
+          <td
+            class="px-6 py-4 text-right font-bold text-green-800 dark:text-green-300 text-lg"
+          >
+            <%= orderSummary.total.toFixed(2) %> €
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-md p-6">
+    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Procéder au paiement</h3>
+    <form action="/paiement" method="POST" class="space-y-4">
+      <div class="mb-4">
+        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Mode de paiement:</label>
+        <select
+          name="paymentMethod"
+          required
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        >
+          <option value="">Choisir un mode de paiement</option>
+          <option value="cash">Espèces (à la livraison/retrait)</option>
+          <option value="card">Carte bancaire</option>
+        </select>
+      </div>
+
+      <div id="cardDetails" class="hidden space-y-3">
+        <input
+          type="text"
+          name="cardNumber"
+          placeholder="Numéro de carte"
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        />
+        <div class="flex gap-3">
+          <input
+            type="text"
+            name="expiryDate"
+            placeholder="MM/AA"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          />
+          <input
+            type="text"
+            name="cvv"
+            placeholder="CVV"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          />
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        class="btn-hover-effect cursor-pointer w-full px-6 py-3 text-base font-medium text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 transition-colors"
+      >
+        Finaliser le paiement (<%= orderSummary.total.toFixed(2) %> €)
+      </button>
+    </form>
+  </div>
+
+  <script>
+    // Afficher/masquer les détails de carte selon le mode de paiement
+    document
+      .querySelector('select[name="paymentMethod"]')
+      .addEventListener("change", function () {
+        const cardDetails = document.getElementById("cardDetails");
+        if (this.value === "card") {
+          cardDetails.classList.remove("hidden");
+          cardDetails
+            .querySelectorAll("input")
+            .forEach((input) => (input.required = true));
+        } else {
+          cardDetails.classList.add("hidden");
+          cardDetails
+            .querySelectorAll("input")
+            .forEach((input) => (input.required = false));
+        }
+      });
+  </script>
+
+  <% } else { %>
+  <div class="text-center py-8">
+    <p class="text-gray-600 dark:text-gray-400 mb-4">Aucune commande en cours.</p>
+    <a
+      href="/plats"
+      class="inline-block bg-blue-700 hover:bg-blue-800 text-white font-medium rounded-lg text-sm px-5 py-2.5 transition-colors dark:bg-blue-600 dark:hover:bg-blue-700"
+      >Voir nos plats</a
+    >
+  </div>
+  <% } %>
+</div>
+  </div>
+</section>

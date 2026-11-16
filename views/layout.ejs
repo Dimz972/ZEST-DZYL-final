@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.3/dist/sweetalert2.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/style/main.css">
+    <link rel="stylesheet" href="/style/client.css">
+    <title><%= title %></title>
+  </head>
+  <body class="min-h-screen flex flex-col">
+    <nav class="bg-white dark:bg-gray-800 antialiased flex-shrink-0">
+      <div class="max-w-screen-xl px-4 mx-auto 2xl:px-0 py-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-8">
+            <div class="shrink-0">
+              <a href="/" title="" class="">
+                <img
+                  class="block w-auto h-20 rounded-full dark:hidden"
+                  src="/logo zet d'zyl.png"
+                  alt="Logo Zest d'zyl"
+                >
+                <img
+                  class="hidden w-auto h-20 rounded-full dark:block"
+                  src="/logo zet d'zyl.png"
+                  alt="Logo Zest d'zyl"
+                >
+              </a>
+            </div>
+            <!-- Barre de navigation -->
+            <ul
+              class="hidden lg:flex items-center justify-start gap-6 md:gap-8 py-3 sm:justify-center"
+            >
+              <li>
+                <a
+                  href="/"
+                  title=""
+                  class="flex text-sm font-medium text-gray-900 hover:text-blue-700 dark:text-white dark:hover:text-blue-500"
+                >
+                  Accueil
+                </a>
+              </li>
+              <li class="shrink-0">
+                <a
+                  href="/plats"
+                  title=""
+                  class="flex text-sm font-medium text-gray-900 hover:text-blue-700 dark:text-white dark:hover:text-blue-500"
+                >
+                  Plats
+                </a>
+              </li>
+              <li class="shrink-0">
+                <a
+                  href="/reservation"
+                  title=""
+                  class="flex text-sm font-medium text-gray-900 hover:text-blue-700 dark:text-white dark:hover:text-blue-500"
+                >
+                  Réservation
+                </a>
+              </li>
+              <li class="shrink-0">
+                <a
+                  href="/boutique"
+                  title=""
+                  class="text-sm font-medium text-gray-900 hover:text-blue-700 dark:text-white dark:hover:text-blue-500"
+                >
+                  Boutique
+                </a>
+              </li>
+              <li class="shrink-0">
+                <a
+                  href="/recettes"
+                  title=""
+                  class="text-sm font-medium text-gray-900 hover:text-blue-700 dark:text-white dark:hover:text-blue-500"
+                >
+                  Recettes
+                </a>
+              </li>
+              <li class="shrink-0">
+                <a
+                  href="/events"
+                  title=""
+                  class="text-sm font-medium text-gray-900 hover:text-blue-700 dark:text-white dark:hover:text-blue-500"
+                >
+                  Événements
+                </a>
+              </li>
+              <li class="shrink-0">
+                <a
+                  href="/contact"
+                  title=""
+                  class="text-sm font-medium text-gray-900 hover:text-blue-700 dark:text-white dark:hover:text-blue-500"
+                >
+                  Contact
+                </a>
+              </li>
+            </ul>
+          </div>
+          <!-- Panier -->
+          <div class="flex items-center lg:space-x-2">
+            <button
+              id="myCartDropdownButton1"
+              data-dropdown-toggle="myCartDropdown1"
+              type="button"
+              class="inline-flex items-center rounded-lg justify-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-medium leading-none text-gray-900 dark:text-white"
+            >
+              <span class="sr-only"> Cart </span>
+              <svg
+                class="w-5 h-5 lg:me-1"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312"
+                />
+              </svg>
+              <span class="cursor-pointer hidden sm:flex">Mon panier</span>
+              <svg
+                class="hidden sm:flex w-4 h-4 text-gray-900 dark:text-white ms-1"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="m19 9-7 7-7-7"
+                />
+              </svg>
+            </button>
+            <!-- Dropdown panier -->
+            <div
+              id="myCartDropdown1"
+              class="hidden z-50 mx-auto max-w-sm space-y-4 overflow-hidden rounded-lg bg-white p-4 antialiased shadow-lg dark:bg-gray-800"
+            >
+              <% if (cart && cart.length > 0) { %> 
+              <% let total = 0; %> 
+              <% cart.forEach(function(item, index) { %> 
+              <% 
+                // Déterminer si c'est un plat ou un article
+                const isPlat = item.plat !== undefined;
+                const isArticle = item.article !== undefined;
+                const currentItem = isPlat ? item.plat : item.article;
+                const itemType = isPlat ? 'plat' : 'article';
+              %>
+              <div
+                style="
+                  border: 1px solid #ccc;
+                  margin: 5px;
+                  padding: 5px;
+                  border-radius: 5px;
+                "
+              >
+                <h3><b><%= currentItem.name.length > 15 ? currentItem.name.substring(0, 15) + '...' : currentItem.name %></b></h3>
+                <p><b>Prix unitaire:</b> <%= currentItem.price %> €</p>
+                <p><b>Quantité:</b> <%= item.quantity %></p>
+                <p>
+                  <b>Sous-total:</b> <%= (currentItem.price *
+                  item.quantity).toFixed(2) %> €
+                </p>
+                <% total += currentItem.price * item.quantity; %>
+                
+                 <button onclick="removeFromCart('<%= currentItem._id %>', '<%= itemType %>')" type="button" title="Supprimer" class="btn-hover-effect cursor-pointer inline-flex items-center justify-center p-2 text-sm font-medium text-white bg-red-700 border border-transparent rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                    </button>
+              </div>
+              <% }); %>
+
+              <div
+                style="
+                  margin-top: 5px;
+                  padding: 5px;
+                  background-color: #f8f9fa;
+                  border-radius: 5px;
+                "
+              >
+                <h2><b>Total du panier: <%= total.toFixed(2) %> €</b></h2>
+              </div>
+
+              <div
+                style="
+                  margin-top: 20px;
+                  display: flex;
+                  flex-direction: column;
+                  gap: 10px;
+                "
+              >
+                <a
+                  href="/panier"
+                  class="btn-hover-effect flex justify-center items-center text-sm font-medium bg-gray-700 hover:bg-gray-800 dark:bg-gray-400 dark:hover:bg-gray-500 rounded-lg px-3 py-1 text-white text-center w-full"
+                >
+                  Voir mon panier
+                </a>
+                <div style="display: flex; gap: 5px">
+                  <a
+                    href="/plats"
+                    class="btn-hover-effect text-sm font-medium bg-blue-700 hover:bg-blue-800 dark:bg-blue-400 dark:hover:bg-blue-500 rounded-lg px-3 py-1 text-white"
+                    >Nos plats</a
+                  >
+                  <a
+                    href="/boutique"
+                    class="btn-hover-effect text-sm font-medium bg-purple-700 hover:bg-purple-800 dark:bg-purple-400 dark:hover:bg-purple-500 rounded-lg px-3 py-1 text-white"
+                    >Nos articles</a
+                  >
+                </div>
+                <a
+                  href="/commande"
+                  class="btn-hover-effect flex justify-center items-center text-sm font-medium bg-green-700 hover:bg-green-800 dark:bg-green-400 dark:hover:bg-green-500 rounded-lg px-3 py-1 text-white"
+                  >Passer commande</a
+                >
+              </div>
+
+              <% } else { %>
+              <p>Votre panier est vide.</p>
+              <div style="display: flex; gap: 5px; margin-top: 10px">
+                <a
+                  href="/plats"
+                  class="btn-hover-effect cursor-pointer font-medium bg-blue-700 hover:bg-blue-800 dark:bg-blue-400 dark:hover:bg-blue-500 rounded-lg px-4 py-2 text-white"
+                  >Voir nos plats</a
+                >
+                <a
+                  href="/boutique"
+                  class="btn-hover-effect cursor-pointer font-medium bg-purple-700 hover:bg-purple-800 dark:bg-purple-400 dark:hover:bg-purple-500 rounded-lg px-4 py-2 text-white"
+                  >Voir nos articles</a
+                >
+              </div>
+              <% } %>
+            </div>
+
+            <!-- Votre compte -->
+            <% if (!user) { %>
+            <button
+              id="userDropdownButton1"
+              data-dropdown-toggle="userDropdown1"
+              type="button"
+              class="inline-flex items-center rounded-lg justify-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-medium leading-none text-gray-900 dark:text-white"
+            >
+              <svg
+                class="w-5 h-5 me-1"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-width="2"
+                  d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                />
+              </svg>
+
+              <span class="cursor-pointer hidden sm:flex">Mon compte</span>
+              <svg
+                class="hidden sm:flex w-4 h-4 text-gray-900 dark:text-white ms-1"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="m19 9-7 7-7-7"
+                />
+              </svg>
+            </button>
+            <div
+              id="userDropdown1"
+              class="hidden z-50 w-56 divide-y divide-gray-100 overflow-hidden overflow-y-auto rounded-lg bg-white antialiased shadow dark:divide-gray-600 dark:bg-gray-700"
+            >
+              <ul
+                class="p-2 text-start text-sm font-medium text-gray-900 dark:text-white"
+              >
+                <li>
+                  <a
+                    href="/users/login"
+                    title=""
+                    class="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+                  >
+                    Se connecter
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <% } else { %>
+            <button
+              id="userDropdownButton1"
+              data-dropdown-toggle="userDropdown1"
+              type="button"
+              class="inline-flex items-center rounded-lg justify-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-medium leading-none text-gray-900 dark:text-white"
+            >
+              <svg
+                class="w-5 h-5 me-1"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-width="2"
+                  d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                />
+              </svg>
+              <span class="cursor-pointer hidden sm:flex">Mon compte</span>
+              <svg
+                class="hidden sm:flex w-4 h-4 text-gray-900 dark:text-white ms-1"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="m19 9-7 7-7-7"
+                />
+              </svg>
+            </button>
+            <div
+              id="userDropdown1"
+              class="hidden z-50 w-56 divide-y divide-gray-100 overflow-hidden overflow-y-auto rounded-lg bg-white antialiased shadow dark:divide-gray-600 dark:bg-gray-700"
+            >
+              <ul
+                class="p-2 text-start text-sm font-medium text-gray-900 dark:text-white"
+              >
+                <li>
+                  <a
+                    href="/users/profil"
+                    title=""
+                    class="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+                  >
+                    Mon Profil
+                  </a>
+                </li>
+                <% if (user.role !== 'admin') { %>
+                <li>
+                  <a
+                    href="/commande/en-cours"
+                    title=""
+                    class="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+                  >
+                    Commandes en cours
+                  </a>
+                </li>
+                 <li>
+                  <a
+                    href="/reservation/en-cours"
+                    title=""
+                    class="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+                  >
+                    Réservation en cours
+                  </a>
+                </li>
+                 <li>
+                  <a
+                    href="/events/en-cours"
+                    title=""
+                    class="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+                  >
+                    Evénements en cours
+                  </a>
+                </li>
+                <% } %> <% if (user.role === 'admin') { %>
+                <li>
+                  <a
+                    href="/commandes/admin"
+                    class="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+                  >
+                    Gestion des Commandes
+                  </a>
+                </li>
+                <!-- <li>
+                  <a
+                    href="/plats/admin"
+                    class="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+                  >
+                    Admin Plats
+                  </a>
+                </li>
+                  <li>
+                  <a
+                    href="/reservation/admin"
+                    class="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+                  >
+                    Admin Reservation
+                  </a>
+                </li>
+                 <li>
+                  <a
+                    href="/articles/admin"
+                    class="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+                  >
+                    Admin Articles
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/recettes/admin"
+                    class="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+                  >
+                    Admin Recettes
+                  </a>
+                </li>
+                <li>
+                <li>
+                  <a
+                    href="/events/admin"
+                    class="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+                  >
+                    Admin Événements
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/contacts/admin"
+                    class="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+                  >
+                    Admin Contacts
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/users/admin"
+                    class="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+                  >
+                    Admin Utilisateurs
+                  </a>
+                </li> -->
+                 <li>
+                  <a
+                    href="/dashboard/admin"
+                    class="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+                  >
+                    Espace d'administration
+                  </a>
+                </li>
+                
+               
+               
+                
+
+                <% } %>
+              </ul>
+              <div
+                class="p-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                <form action="/logout" method="GET" class="w-full">
+                 <button type="submit" title="Se déconnecter" class="btn-hover-effect cursor-pointer w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-red-700 border border-transparent rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+                                <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                                </svg>
+                            Se déconnecter
+                      </button>
+                </form>
+              </div>
+            </div>
+            <% } %>
+            <!-- Hamburger nav -->
+            <button
+              type="button"
+              data-collapse-toggle="ecommerce-navbar-menu-1"
+              aria-controls="ecommerce-navbar-menu-1"
+              aria-expanded="false"
+              class="inline-flex lg:hidden items-center justify-center hover:bg-gray-100 rounded-md dark:hover:bg-gray-700 p-2 text-gray-900 dark:text-white"
+            >
+              <span class="sr-only"> Open Menu </span>
+              <svg
+                class="w-5 h-5"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-width="2"
+                  d="M5 7h14M5 12h14M5 17h14"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div
+          id="ecommerce-navbar-menu-1"
+          class="bg-gray-50 dark:bg-gray-700 dark:border-gray-600 border border-gray-200 rounded-lg py-3 hidden px-4 mt-4"
+        >
+          <ul
+            class="text-gray-900 text-sm font-medium dark:text-white space-y-3"
+          >
+            <li>
+              <a href="/" class="hover:text-blue-700 dark:hover:text-blue-500"
+                >Accueil</a
+              >
+            </li>
+            <li>
+              <a
+                href="/plats"
+                class="hover:text-blue-700 dark:hover:text-blue-500"
+                >Plats</a
+              >
+            </li>
+            <li>
+              <a
+                href="/reservation"
+                class="hover:text-blue-700 dark:hover:text-blue-500"
+                >Réservation</a
+              >
+            </li>
+            <li>
+              <a
+                href="/boutique"
+                class="hover:text-blue-700 dark:hover:text-blue-500"
+                >Boutique</a
+              >
+            </li>
+            <li>
+              <a
+                href="/recettes"
+                class="hover:text-blue-700 dark:hover:text-blue-500"
+                >Recettes</a
+              >
+            </li>
+            <li>
+              <a
+                href="/events"
+                class="hover:text-blue-700 dark:hover:text-blue-500"
+                >Événements</a
+              >
+            </li>
+            <li>
+              <a
+                href="/contact"
+                class="hover:text-blue-700 dark:hover:text-blue-500"
+                >Contact</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main><%- body %></main>
+
+    <!-- footer -->
+    <footer class="flex-shrink-0 p-4 bg-white sm:p-6 dark:bg-gray-800">
+      <div class="mx-auto max-w-screen-xl mb-6">
+        <hr
+          class="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8"
+        >
+        <div class="sm:flex sm:items-center sm:justify-between">
+          <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400"
+            >© 2025 <a href="/" class="hover:underline">ZEST' D'ZYL</a>. Tous
+            droits réservés.
+          </span>
+          <div class="flex space-x-6 sm:justify-center sm:mt-0">
+            <a
+              href="https://www.facebook.com/?locale=fr_FR"
+              class="text-gray-500 hover:text-gray-900 dark:hover:text-white"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </a>
+            <a
+              href="https://www.instagram.com/"
+              class="text-gray-500 hover:text-gray-900 dark:hover:text-white"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </a>
+            <a
+              href="https://x.com/"
+              class="text-gray-500 hover:text-gray-900 dark:hover:text-white"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"
+                />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("myCartDropdownButton1").click();
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+    <script src="/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </body>
+</html>
+
+<!-- <nav class="navbar">
+  <div class="nav-container">
+    <a href="/" class="nav-logo">🏝️ Restaurant Caribéen</a>
+    <ul class="nav-menu">
+      <li><a href="/">Accueil</a></li>
+      <li><a href="/plats">Plats</a></li>
+      <li><a href="/reservation">Réservation</a></li>
+      <li><a href="/boutique">Boutique</a></li>
+      <li><a href="/recettes">Recettes</a></li>
+      <li><a href="/event">Événements</a></li>
+      <li><a href="/panier">Panier</a></li>
+      <li><a href="/commande">Commande</a></li>
+      <li><a href="/users/profil">Profil</a></li>
+      <li><a href="/users/login">Connexion</a></li>
+      <li><a href="/users/inscription">Inscription</a></li>
+      <li><a href="/contact">Contact</a></li>
+    </ul>
+  </div>
+</nav> -->

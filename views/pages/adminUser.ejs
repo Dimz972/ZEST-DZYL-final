@@ -1,0 +1,396 @@
+<section class="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5">
+    <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
+        <a href="/dashboard/admin" class="btn-hover-effect font-medium inline-flex items-center text-white px-4 py-2 rounded-lg mb-6 bg-blue-700 hover:bg-blue-800">
+            <i class="fas fa-arrow-left mr-2"></i> Retour au dashboard
+        </a>
+        <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
+            <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Liste des utilisateurs</h1>
+                <div class="relative w-full md:w-auto">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                        </svg>
+                    </div>
+                    <input type="text" id="searchUser" placeholder="Rechercher un utilisateur..." 
+                           class="block w-full md:w-80 py-2 pr-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                </div>
+            </div>
+
+<% if (typeof successMessage !== 'undefined' && successMessage) { %>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            icon: 'success',
+            title: 'Succès !',
+            text: '<%= successMessage %>',
+            confirmButtonColor: '#3b82f6',
+            timer: 3000,
+            showConfirmButton: false
+        });
+    });
+</script>
+<% } %>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th class="px-4 py-3">Prénom</th>
+                            <th class="px-4 py-3">Nom</th>
+                            <th class="px-4 py-3">Email</th>
+                            <th class="px-4 py-3">Adresse</th>
+                            <th class="px-4 py-3">Téléphone</th>
+                            <th class="px-4 py-3">Mot de passe</th>
+                            <th class="px-4 py-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% users.forEach(user => { %>
+                        <tr class="border-b dark:border-gray-700 align-top">
+                            <td class="px-4 py-3 font-medium text-gray-900 dark:text-white"><%= user.fname %></td>
+                            <td class="px-4 py-3"><%= user.lname %></td>
+                            <td class="px-4 py-3"><%= user.email %></td>
+                            <td class="px-4 py-3"><%= user.adresse %></td>
+                            <td class="px-4 py-3"><%= user.phone_number %></td>
+                            <td class="px-4 py-3"><%= user.password %></td>
+                            <td class="px-4 py-3 space-y-2">
+                                <!-- Update button -->
+                                <button id="updateModalButton" title="Modifier cet utilisateur" data-modal-target="updateModal" data-modal-toggle="updateModal" class="btn-hover-effect cursor-pointer inline-flex items-center justify-center p-2 text-sm font-medium text-white bg-blue-700 border border-transparent rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                                    data-id="<%= user._id %>"
+                                    data-fname="<%= user.fname %>"
+                                    data-lname="<%= user.lname %>"
+                                    data-email="<%= user.email %>"
+                                    data-phone="<%= user.phone_number %>"
+                                    data-adresse="<%= user.adresse %>">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </button>
+                                <!-- Delete Form -->
+                                <form action="/users/delete/<%= user._id %>?_method=DELETE" method="POST" class="mb-2" onsubmit="return confirmDelete(event, 'utilisateur')">
+                                     <button type="submit" title="Supprimer cet utilisateur" class="btn-hover-effect cursor-pointer inline-flex items-center justify-center p-2 text-sm font-medium text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+                                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                       </svg>
+                                     </button>
+                                </form>
+                            </td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal de modification d'utilisateur -->
+<div id="updateModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full md:inset-0 h-modal md:h-full">
+    <div class="relative p-4 w-full max-w-4xl h-full md:h-auto">
+        <!-- Modal content -->
+        <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5 max-w-4xl mx-auto w-full">
+            <!-- Modal header -->
+            <section class="bg-gray-50 py-4 antialiased dark:bg-gray-900 md:py-12">
+                <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
+                    <div class="px-4 mx-auto max-w-4xl">
+                        <h1 class="text-3xl font-bold text-center mb-6 text-blue-600">Modifier l'utilisateur</h1>
+                        
+                        <!-- Carte formulaire -->
+                        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-md dark:border-gray-700 dark:bg-gray-800">
+                            <form id="updateProfileForm" method="POST">
+                                <input type="hidden" name="_method" value="PUT">
+                                
+                                <div class="grid gap-6 grid-cols-1 lg:grid-cols-2">
+                                    <!-- Prénom -->
+                                    <div>
+                                        <label for="updateFname" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Prénom</label>
+                                        <input 
+                                            type="text" 
+                                            id="updateFname" 
+                                            name="fname" 
+                                            required 
+                                            placeholder="Entrez le prénom"
+                                            class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        >
+                                    </div>
+
+                                    <!-- Nom -->
+                                    <div>
+                                        <label for="updateLname" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nom</label>
+                                        <input 
+                                            type="text" 
+                                            id="updateLname" 
+                                            name="lname" 
+                                            required 
+                                            placeholder="Entrez le nom"
+                                            class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        >
+                                    </div>
+                                </div>
+
+                                <!-- Email -->
+                                <div class="mt-6">
+                                    <label for="updateEmail" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
+                                    <input 
+                                        type="email" 
+                                        id="updateEmail" 
+                                        name="email" 
+                                        required 
+                                        placeholder="Entrez l'email"
+                                        class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    >
+                                </div>
+
+                                <!-- Téléphone -->
+                                <div class="mt-6">
+                                    <label for="updatePhone" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Téléphone</label>
+                                    <input 
+                                        type="tel" 
+                                        id="updatePhone" 
+                                        name="phone_number" 
+                                        placeholder="Entrez le numéro de téléphone"
+                                        class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    >
+                                </div>
+
+                                <!-- Adresse -->
+                                <div class="mt-6">
+                                    <label for="updateAdresse" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Adresse</label>
+                                    <textarea 
+                                        id="updateAdresse" 
+                                        name="adresse" 
+                                        rows="3" 
+                                        placeholder="Entrez l'adresse complète"
+                                        class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    ></textarea>
+                                </div>
+
+                                <!-- Mot de passe -->
+                                <div class="mt-6">
+                                    <label for="updatePassword" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Mot de passe</label>
+                                    <input 
+                                        type="password" 
+                                        id="password" 
+                                        name="password" 
+                                        placeholder="Laissez vide pour ne pas modifier"
+                                        class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    >
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Laissez ce champ vide si vous ne souhaitez pas modifier le mot de passe</p>
+                                    
+                                    <!-- Messages de validation du mot de passe -->
+                                    <div id="passwordValidation" class="mt-2 space-y-1">
+                                        <p id="contient" class="text-xs text-gray-500 dark:text-gray-400">Le mot de passe doit contenir au moins 8 caractères !</p>
+                                        <p id="maj" class="text-xs text-gray-500 dark:text-gray-400">Le mot de passe doit contenir au moins une majuscule !</p>
+                                        <p id="spe" class="text-xs text-gray-500 dark:text-gray-400">Le mot de passe doit contenir au moins un caractère spécial !</p>
+                                        <p id="num" class="text-xs text-gray-500 dark:text-gray-400">Le mot de passe doit contenir au moins un chiffre !</p>
+                                    </div>
+                                </div>
+
+                                <!-- Confirmation du mot de passe -->
+                                <div class="mt-6">
+                                    <label for="confirmPassword" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Confirmer le mot de passe</label>
+                                    <input 
+                                        type="password" 
+                                        id="confirmPassword" 
+                                        name="confirmPassword" 
+                                        placeholder="Confirmez le nouveau mot de passe"
+                                        class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    >
+                                    <p id="ver" class="mt-1 text-xs text-gray-500 dark:text-gray-400">Les mots de passe doivent correspondre !</p>
+                                </div>
+
+                                <!-- Boutons d'action -->
+                                <div class="flex gap-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-600">
+                                    <button type="submit" 
+                                            class="btn-hover-effect cursor-pointer flex-1 inline-flex items-center justify-center rounded-lg bg-blue-700 px-5 py-3 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 transition-colors">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        Modifier l'utilisateur
+                                    </button>
+                                   <a href="/users/admin" 
+                                       class="btn-hover-effect cursor-pointer flex-1 inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700 transition-colors">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                        Annuler
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<script>
+        // Fonction de recherche d'utilisateurs
+        document.getElementById('searchUser').addEventListener('keyup', function() {
+            const searchValue = this.value.toLowerCase();
+            const tableRows = document.querySelectorAll('tbody tr');
+            
+            tableRows.forEach(row => {
+                const fname = row.cells[0].textContent.toLowerCase();
+                const lname = row.cells[1].textContent.toLowerCase();
+                const email = row.cells[2].textContent.toLowerCase();
+                const adresse = row.cells[3].textContent.toLowerCase();
+                const phone = row.cells[4].textContent.toLowerCase();
+                
+                // Recherche dans tous les champs
+                const matchFound = fname.includes(searchValue) || 
+                                 lname.includes(searchValue) || 
+                                 email.includes(searchValue) || 
+                                 adresse.includes(searchValue) || 
+                                 phone.includes(searchValue);
+                
+                if (matchFound) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // Gestion du modal de modification
+        document.addEventListener('DOMContentLoaded', function() {
+            const updateButtons = document.querySelectorAll('#updateModalButton');
+            updateButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.dataset.id;
+                    const fname = this.dataset.fname;
+                    const lname = this.dataset.lname;
+                    const email = this.dataset.email;
+                    const phone = this.dataset.phone;
+                    const adresse = this.dataset.adresse;
+                    
+                    openUpdateModal(id, fname, lname, email, phone, adresse);
+                });
+            });
+            
+            // Initialiser la validation du mot de passe pour cette page
+            if (typeof initPasswordValidation === 'function') {
+                initPasswordValidation();
+            }
+        });
+
+        function openUpdateModal(id, fname, lname, email, phone, adresse) {
+            // Remplir les champs du formulaire
+            document.getElementById('updateFname').value = fname;
+            document.getElementById('updateLname').value = lname;
+            document.getElementById('updateEmail').value = email;
+            document.getElementById('updatePhone').value = phone || '';
+            document.getElementById('updateAdresse').value = adresse || '';
+            document.getElementById('password').value = ''; // Toujours vide pour la sécurité
+            document.getElementById('confirmPassword').value = ''; // Toujours vide pour la sécurité
+
+            // Réinitialiser les messages de validation
+            resetPasswordValidation();
+
+            // Définir l'action du formulaire
+            document.getElementById('updateProfileForm').action = `/users/update/${id}`;
+
+            // Afficher le modal
+            document.getElementById('updateModal').classList.remove('hidden');
+            
+            // Initialiser la validation du mot de passe pour ce modal
+            initPasswordValidation();
+        }
+
+        function closeUpdateModal() {
+            document.getElementById('updateModal').classList.add('hidden');
+            document.getElementById('updateProfileForm').reset();
+            resetPasswordValidation();
+        }
+
+        // Fermer le modal en cliquant à l'extérieur
+        document.getElementById('updateModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeUpdateModal();
+            }
+        });
+
+        // Fonction pour réinitialiser les messages de validation
+        function resetPasswordValidation() {
+            const elements = ['contient', 'maj', 'spe', 'num', 'ver'];
+            elements.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.style.color = '';
+                    element.className = 'text-xs text-gray-500 dark:text-gray-400';
+                    
+                    // Réinitialiser le texte par défaut
+                    switch(id) {
+                        case 'contient':
+                            element.textContent = 'Le mot de passe doit contenir au moins 8 caractères !';
+                            break;
+                        case 'maj':
+                            element.textContent = 'Le mot de passe doit contenir au moins une majuscule !';
+                            break;
+                        case 'spe':
+                            element.textContent = 'Le mot de passe doit contenir au moins un caractère spécial !';
+                            break;
+                        case 'num':
+                            element.textContent = 'Le mot de passe doit contenir au moins un chiffre !';
+                            break;
+                        case 'ver':
+                            element.textContent = 'Les mots de passe doivent correspondre !';
+                            break;
+                    }
+                }
+            });
+        }
+
+        // Validation du formulaire de modification
+        document.getElementById('updateProfileForm').addEventListener('submit', function(e) {
+            const email = document.getElementById('updateEmail').value;
+            const fname = document.getElementById('updateFname').value;
+            const lname = document.getElementById('updateLname').value;
+            
+            if (!email || !fname || !lname) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Champs obligatoires',
+                    text: 'Veuillez remplir tous les champs obligatoires (prénom, nom, email).',
+                    confirmButtonColor: '#3b82f6'
+                });
+                return false;
+            }
+
+            // Validation basique de l'email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Email invalide',
+                    text: 'Veuillez entrer une adresse email valide.',
+                    confirmButtonColor: '#3b82f6'
+                });
+                return false;
+            }
+        });
+
+
+// Fonction de confirmation de suppression avec SweetAlert2
+function confirmDelete(event, itemType) {
+    event.preventDefault();
+    Swal.fire({
+        title: 'Êtes-vous sûr ?',
+        text: `Voulez-vous vraiment supprimer cet ${itemType} ?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Oui, supprimer',
+        cancelButtonText: 'Annuler'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            event.target.submit();
+        }
+    });
+    return false;
+}
+</script>

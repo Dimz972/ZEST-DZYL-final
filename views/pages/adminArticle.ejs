@@ -1,0 +1,666 @@
+<section class="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5">
+    <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
+        <a href="/dashboard/admin" class="btn-hover-effect font-medium inline-flex items-center text-white px-4 py-2 rounded-lg mb-6 bg-blue-700 hover:bg-blue-800">
+            <i class="fas fa-arrow-left mr-2"></i> Retour au dashboard
+        </a>
+        <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
+            <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Liste des articles</h1>
+                <!-- <a href="/articles/admin/add" class="flex items-center justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                    <svg class="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/></svg>
+                    Ajouter un article
+                </a> -->
+                <button id="defaultModalButton" data-modal-target="defaultModal" data-modal-toggle="defaultModal" class="btn-hover-effect cursor-pointer flex items-center justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" type="button">
+                    <svg class="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/></svg>
+                    Ajouter un article
+                </button>
+
+<% if (typeof successMessage !== 'undefined' && successMessage) { %>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            icon: 'success',
+            title: 'Succès !',
+            text: '<%= successMessage %>',
+            confirmButtonColor: '#3b82f6',
+            timer: 3000,
+            showConfirmButton: false
+        });
+    });
+</script>
+<% } %>
+                
+
+
+<!-- Main modal d'ajout d'article -->
+<div id="defaultModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full">
+    <div class="relative p-4 w-full max-w-4xl h-full md:h-auto">
+        <!-- Modal content -->
+    <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5 max-w-4xl mx-auto w-full">
+            <!-- Modal header -->
+            <section class="bg-gray-50 rounded-lg py-4 antialiased dark:bg-gray-900 md:py-12">
+    <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
+        <div class="px-4 mx-auto max-w-4xl">
+            <h1 class="text-3xl font-bold text-center mb-6 text-blue-600">Ajouter un article</h1>
+            
+            <!-- Carte formulaire -->
+            <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-md dark:border-gray-700 dark:bg-gray-800">
+                <form action="/articles/create" method="POST" id="articleForm" enctype="multipart/form-data">
+            
+                    <div class="grid gap-6 grid-cols-1 lg:grid-cols-2">
+                        <!-- Section Image -->
+                        <div>
+                            <label for="image" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Image de l'article</label>
+                            <div class="h-56 w-full border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+                                <input 
+                                    type="file" 
+                                    id="image" 
+                                    name="image"
+                                    accept="image/*"
+                                    class="hidden"
+                                    onchange="previewImage(event)"
+                                >
+                                <div id="imagePreview" class="hidden h-full w-full">
+                                    <img id="previewImg" class="h-full w-full object-cover rounded-lg" src="" alt="Aperçu">
+                                </div>
+                                <div id="uploadPlaceholder" class="text-center">
+                                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg>
+                                    <button type="button" onclick="document.getElementById('image').click()" class="cursor-pointer mt-2 text-sm text-blue-600 hover:text-blue-700">
+                                        Cliquez pour ajouter une image
+                                    </button>
+                                    <p class="text-xs text-gray-500 mt-1">PNG, JPG, GIF jusqu'à 5MB</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section Informations principales -->
+                        <div class="space-y-4">
+                            <div>
+                                <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nom de l'article</label>
+                                <input 
+                                    type="text" 
+                                    id="name" 
+                                    name="name" 
+                                    required 
+                                    placeholder="Entrez le nom de l'article"
+                                    value="<%= typeof article !== 'undefined' ? article.name : '' %>"
+                                    class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                >
+                            </div>
+
+                            <div>
+                                <label for="origin" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Origine</label>
+                                <select id="origin" name="origin" required class="cursor-pointer w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    <option value="">Sélectionnez l'origine</option>
+                                    <option value="Martinique" <%= typeof article !== 'undefined' && article.origin === 'Martinique' ? 'selected' : '' %>>Martinique</option>
+                                    <option value="Guadeloupe" <%= typeof article !== 'undefined' && article.origin === 'Guadeloupe' ? 'selected' : '' %>>Guadeloupe</option>
+                                    <option value="Réunion" <%= typeof article !== 'undefined' && article.origin === 'Réunion' ? 'selected' : '' %>>Réunion</option>
+                                    <option value="Guyane" <%= typeof article !== 'undefined' && article.origin === 'Guyane' ? 'selected' : '' %>>Guyane</option>
+                                    <option value="Haïti" <%= typeof article !== 'undefined' && article.origin === 'Haïti' ? 'selected' : '' %>>Haïti</option>
+                                    <option value="Autre" <%= typeof article !== 'undefined' && article.origin === 'Autre' ? 'selected' : '' %>>Autre</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Options</label>
+                                <div class="flex flex-wrap gap-2">
+                                    <label class="inline-flex items-center">
+                                        <input type="checkbox" id="isSpicyCheckbox" name="isSpicy" <%= typeof article !== 'undefined' && article.isSpicy ? 'checked' : '' %> class="cursor-pointer form-checkbox h-4 w-4 text-red-600 rounded">
+                                        <span class="ml-2 px-2.5 py-0.5 text-xs font-medium bg-red-100 text-red-800 rounded dark:bg-red-900 dark:text-red-300">Épicé 🌶️</span>
+                                    </label>
+                                    <label class="inline-flex items-center">
+                                        <input type="checkbox" id="isVegetarianCheckbox" name="isVegetarian" <%= typeof article !== 'undefined' && article.isVegetarian ? 'checked' : '' %> class="cursor-pointer form-checkbox h-4 w-4 text-green-600 rounded">
+                                        <span class="ml-2 px-2.5 py-0.5 text-xs font-medium bg-green-100 text-green-800 rounded dark:bg-green-900 dark:text-green-300">Végétarien 🌱</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="price" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Prix</label>
+                                <div class="relative">
+                                    <input 
+                                        type="number" 
+                                        step="0.01"
+                                        min="0"
+                                        id="price" 
+                                        name="price" 
+                                        required 
+                                        placeholder="0.00"
+                                        value="<%= typeof article !== 'undefined' ? article.price : '' %>"
+                                        class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block p-2.5 pr-8 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    >
+                                    <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">€</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section Description -->
+                    <div class="mt-6">
+                        <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
+                        <textarea 
+                            id="description" 
+                            name="description" 
+                            rows="4" 
+                            required 
+                            placeholder="Décrivez l'article..."
+                            class="w-full block p-2.5 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        ><%= typeof article !== 'undefined' ? article.description : '' %></textarea>
+                    </div>
+
+                    <!-- Section Ingrédients -->
+                    <div class="mt-6">
+                        <label for="ingredients" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Ingrédients</label>
+                        <div id="ingredientsContainer" class="space-y-2">
+                            <% if (typeof article !== 'undefined' && article.ingredients && article.ingredients.length) { %>
+                                <% article.ingredients.forEach(function(ingredient, idx) { %>
+                                    <div class="flex gap-2 ingredient-input">
+                                        <input 
+                                            type="text" 
+                                            name="ingredients[]" 
+                                            required 
+                                            placeholder="Nom de l'ingrédient"
+                                            value="<%= ingredient %>"
+                                            class="flex-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        >
+                                        <% if (idx > 0) { %>
+                                            <button type="button" onclick="this.parentElement.remove()" class="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                </svg>
+                                            </button>
+                                        <% } %>
+                                    </div>
+                                <% }) %>
+                            <% } else { %>
+                                <div class="flex gap-2 ingredient-input">
+                                    <input 
+                                        type="text" 
+                                        name="ingredients[]" 
+                                        required 
+                                        placeholder="Nom de l'ingrédient"
+                                        class="flex-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    >
+                                </div>
+                            <% } %>
+                        </div>
+                        <button type="button" onclick="addIngredient()" class="btn-hover-effect cursor-pointer mt-3 inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            Ajouter un ingrédient
+                        </button>
+                    </div>
+
+                    <!-- Boutons d'action -->
+                    <div class="flex gap-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-600">
+                        <button type="submit" 
+                                class="btn-hover-effect cursor-pointer flex-1 inline-flex items-center justify-center rounded-lg bg-blue-700 px-5 py-3 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 transition-colors">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            Ajouter l'article
+                        </button>
+                        <a href="/articles/admin" 
+                           class="btn-hover-effect cursor-pointer flex-1 inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700 transition-colors">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Annuler
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Fonctions utilitaires réutilisables
+function previewImageHandler(event, previewId, placeholderId, imgId) {
+    const file = event.target.files[0];
+    const preview = document.getElementById(previewId);
+    const placeholder = document.getElementById(placeholderId);
+    const previewImg = document.getElementById(imgId);
+    
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            previewImg.src = e.target.result;
+            preview.classList.remove('hidden');
+            placeholder.classList.add('hidden');
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function addIngredientHandler(containerId) {
+    const container = document.getElementById(containerId);
+    const newIngredient = document.createElement('div');
+    newIngredient.className = 'flex gap-2 ingredient-input';
+    newIngredient.innerHTML = `
+        <input 
+            type="text" 
+            name="ingredients[]" 
+            required 
+            placeholder="Nom de l'ingrédient"
+            class="flex-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        >
+        <button type="button" onclick="this.parentElement.remove()" class="btn-hover-effect cursor-pointer px-3 py-2 text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+    `;
+    container.appendChild(newIngredient);
+}
+
+function validateIngredientsForm(form) {
+    const ingredients = form.querySelectorAll('input[name="ingredients[]"]');
+    let hasEmptyIngredient = false;
+    
+    ingredients.forEach(function(input) {
+        if (input.value.trim() === '') {
+            hasEmptyIngredient = true;
+            input.focus();
+        }
+    });
+    
+    if (hasEmptyIngredient) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Champs vides',
+            text: 'Veuillez remplir tous les champs d\'ingrédients ou les supprimer s\'ils sont vides.',
+            confirmButtonColor: '#3b82f6'
+        });
+        return false;
+    }
+    return true;
+}
+
+// Fonctions spécifiques pour le formulaire d'ajout
+function previewImage(event) {
+    previewImageHandler(event, 'imagePreview', 'uploadPlaceholder', 'previewImg');
+}
+
+function addIngredient() {
+    addIngredientHandler('ingredientsContainer');
+}
+
+// Validation du formulaire d'ajout
+document.getElementById('articleForm').addEventListener('submit', function(e) {
+    const imageInput = this.querySelector('input[name="image"]');
+    if (!imageInput.files.length) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Image requise',
+            text: 'Veuillez sélectionner une image pour l\'article',
+            confirmButtonColor: '#3b82f6'
+        });
+        e.preventDefault();
+        return false;
+    }
+    
+    if (!validateIngredientsForm(this)) {
+        e.preventDefault();
+    }
+});
+</script>
+
+
+        </div>
+    </div>
+  </div>
+</div>
+            
+<% if (articles && articles.length > 0) { %>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th class="px-4 py-3 w-24">Image</th>
+                            <th class="px-4 py-3">Nom</th>
+                            <th class="px-4 py-3">Description</th>
+                            <th class="px-4 py-3">Origine</th>
+                            <th class="px-2 py-3 w-16">Prop.</th>
+                            <th class="px-4 py-3">Ingrédients</th>
+                            <th class="px-4 py-3">Prix (€)</th>
+                            <th class="px-4 py-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% articles.forEach(article => { %>
+                        <tr class="border-b dark:border-gray-700 align-top">
+                            <td class="px-4 py-3">
+                                <img src="<%= article.image %>" alt="<%= article.name %>" class="w-16 h-16 object-cover rounded shadow">
+                            </td>
+                            <td class="px-4 py-3 font-medium text-gray-900 dark:text-white"><%= article.name %></td>
+                            <td class="px-4 py-3"><%= article.description %></td>
+                            <td class="px-4 py-3"><%= article.origin %></td>
+                            <td class="px-2 py-3 text-center">
+                                <div class="flex flex-col space-y-1">
+                                    <% if (article.isSpicy) { %><span>🌶️</span><% } %>
+                                    <% if (article.isVegetarian) { %><span>🌱</span><% } %>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3"><%= article.ingredients.join(', ') %></td>
+                            <td class="px-4 py-3"><%= article.price %></td>
+                            <td class="px-4 py-3 space-y-2">
+                                 <!-- Update button -->
+                                <button id="updateModalButton" title="Modifier cet article" data-modal-target="updateModal" data-modal-toggle="updateModal" class="btn-hover-effect cursor-pointer inline-flex items-center justify-center p-2 text-sm font-medium text-white bg-blue-700 border border-transparent rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                                     data-id="<%= article._id %>"
+                                    data-name="<%= article.name %>"
+                                    data-description="<%= article.description %>"
+                                    data-origin="<%= article.origin %>"
+                                    data-spicy="<%= article.isSpicy %>"
+                                    data-vegetarian="<%= article.isVegetarian %>"
+                                    data-ingredients="<%= article.ingredients.join(', ') %>"
+                                    data-price="<%= article.price %>"
+                                    >
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </button>
+                                <!-- Delete Form -->
+                                <form action="/articles/delete/<%= article._id %>" method="POST" class="mb-2" onsubmit="return confirmDelete(event, 'article')">
+                                    <button type="submit" title="Supprimer mon compte" class="btn-hover-effect cursor-pointer inline-flex items-center justify-center p-2 text-sm font-medium text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+                                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                      </svg>
+                                    </button>
+                                </form>        
+                            </td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+<% } else { %>
+            <div class="text-center py-12">
+                <h2 class="text-2xl font-semibold text-gray-600 mb-4">Aucun article disponible</h2>
+                <p class="text-gray-500">Commencez par ajouter votre premier article !</p>
+            </div>
+      
+<% } %>
+        </div>
+    </div>
+</section>
+
+<!-- Modal de modification d'article -->
+<div id="updateModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full md:inset-0 h-modal md:h-full">
+    <div class="relative p-4 w-full max-w-4xl h-full md:h-auto">
+        <!-- Modal content -->
+        <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5 max-w-4xl mx-auto w-full">
+            <!-- Modal header -->
+            <section class="bg-gray-50 rounded-lg py-4 antialiased dark:bg-gray-900 md:py-12">
+                <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
+                    <div class="px-4 mx-auto max-w-4xl">
+                        <h1 class="text-3xl font-bold text-center mb-6 text-blue-600">Modifier l'article</h1>
+                        
+                        <!-- Carte formulaire -->
+                        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-md dark:border-gray-700 dark:bg-gray-800">
+                            <form id="updateForm" method="POST" enctype="multipart/form-data">
+                        
+                                <div class="grid gap-6 grid-cols-1 lg:grid-cols-2">
+                                    <!-- Section Image -->
+                                    <div>
+                                        <label for="updateImage" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Image de l'article</label>
+                                        <div class="h-56 w-full border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+                                            <input 
+                                                type="file" 
+                                                id="updateImage" 
+                                                name="image"
+                                                accept="image/*"
+                                                class="hidden"
+                                                onchange="previewUpdateImage(event)"
+                                            >
+                                            <div id="updateImagePreview" class="hidden h-full w-full">
+                                                <img id="updatePreviewImg" class="h-full w-full object-cover rounded-lg" src="" alt="Aperçu">
+                                            </div>
+                                            <div id="updateUploadPlaceholder" class="text-center">
+                                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                                </svg>
+                                                <button type="button" onclick="document.getElementById('updateImage').click()" class="cursor-pointer mt-2 text-sm text-blue-600 hover:text-blue-700">
+                                                    Cliquez pour modifier l'image
+                                                </button>
+                                                <p class="text-xs text-gray-500 mt-1">PNG, JPG, GIF jusqu'à 5MB</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Section Informations principales -->
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label for="updateName" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nom de l'article</label>
+                                            <input 
+                                                type="text" 
+                                                id="updateName" 
+                                                name="name" 
+                                                required 
+                                                placeholder="Entrez le nom de l'article"
+                                                class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                            >
+                                        </div>
+
+                                        <div>
+                                            <label for="updateOrigin" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Origine</label>
+                                            <select id="updateOrigin" name="origin" required class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                                <option value="">Sélectionnez l'origine</option>
+                                                <option value="Martinique">Martinique</option>
+                                                <option value="Guadeloupe">Guadeloupe</option>
+                                                <option value="Réunion">Réunion</option>
+                                                <option value="Guyane">Guyane</option>
+                                                <option value="Haïti">Haïti</option>
+                                                <option value="Autre">Autre</option>
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Options</label>
+                                            <div class="flex flex-wrap gap-2">
+                                                <label class="inline-flex items-center">
+                                                    <input type="checkbox" id="updateIsSpicy" name="isSpicy" class="form-checkbox h-4 w-4 text-red-600 rounded">
+                                                    <span class="ml-2 px-2.5 py-0.5 text-xs font-medium bg-red-100 text-red-800 rounded dark:bg-red-900 dark:text-red-300">Épicé 🌶️</span>
+                                                </label>
+                                                <label class="inline-flex items-center">
+                                                    <input type="checkbox" id="updateIsVegetarian" name="isVegetarian" class="form-checkbox h-4 w-4 text-green-600 rounded">
+                                                    <span class="ml-2 px-2.5 py-0.5 text-xs font-medium bg-green-100 text-green-800 rounded dark:bg-green-900 dark:text-green-300">Végétarien 🌱</span>
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label for="updatePrice" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Prix</label>
+                                            <div class="relative">
+                                                <input 
+                                                    type="number" 
+                                                    step="0.01"
+                                                    min="0"
+                                                    id="updatePrice" 
+                                                    name="price" 
+                                                    required 
+                                                    placeholder="0.00"
+                                                    class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block p-2.5 pr-8 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                >
+                                                <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">€</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Section Description -->
+                                <div class="mt-6">
+                                    <label for="updateDescription" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
+                                    <textarea 
+                                        id="updateDescription" 
+                                        name="description" 
+                                        rows="4" 
+                                        required 
+                                        placeholder="Décrivez l'article..."
+                                        class="w-full block p-2.5 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    ></textarea>
+                                </div>
+
+                                <!-- Section Ingrédients -->
+                                <div class="mt-6">
+                                    <label for="updateIngredients" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Ingrédients</label>
+                                    <div id="updateIngredientsContainer" class="space-y-2">
+                                        <div class="flex gap-2 ingredient-input">
+                                            <input 
+                                                type="text" 
+                                                name="ingredients[]" 
+                                                required 
+                                                placeholder="Nom de l'ingrédient"
+                                                class="flex-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                            >
+                                        </div>
+                                    </div>
+                                    <button type="button" onclick="addUpdateIngredient()" class="btn-hover-effect cursor-pointer mt-3 inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                        </svg>
+                                        Ajouter un ingrédient
+                                    </button>
+                                </div>
+
+                                <!-- Boutons d'action -->
+                                <div class="flex gap-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-600">
+                                    <button type="submit" 
+                                            class="btn-hover-effect cursor-pointer flex-1 inline-flex items-center justify-center rounded-lg bg-blue-700 px-5 py-3 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 transition-colors">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        Modifier l'article
+                                    </button>
+                                   <a href="/articles/admin" 
+                           class="btn-hover-effect cursor-pointer flex-1 inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700 transition-colors">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Annuler
+                        </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<script>
+// Ajouter un event listener pour tous les boutons de modification
+document.addEventListener('DOMContentLoaded', function() {
+    const updateButtons = document.querySelectorAll('#updateModalButton');
+    updateButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const id = this.dataset.id;
+            const name = this.dataset.name;
+            const description = this.dataset.description;
+            const origin = this.dataset.origin;
+            const isSpicy = this.dataset.spicy === 'true';
+            const isVegetarian = this.dataset.vegetarian === 'true';
+            const ingredients = this.dataset.ingredients;
+            const price = this.dataset.price;
+            
+            openUpdateModal(id, name, description, origin, isSpicy, isVegetarian, ingredients, price);
+        });
+    });
+});
+
+function openUpdateModal(id, name, description, origin, isSpicy, isVegetarian, ingredients, price) {
+    document.getElementById('updateForm').action = `/articles/update/${id}`;
+    document.getElementById('updateName').value = name;
+    document.getElementById('updateDescription').value = description;
+    document.getElementById('updateOrigin').value = origin;
+    document.getElementById('updatePrice').value = price;
+    document.getElementById('updateIsSpicy').checked = isSpicy;
+    document.getElementById('updateIsVegetarian').checked = isVegetarian;
+    
+    // Gérer les ingrédients
+    const container = document.getElementById('updateIngredientsContainer');
+    container.innerHTML = ''; // Vider le conteneur
+    
+    const ingredientsArray = ingredients.split(', ').filter(i => i.trim() !== '');
+    ingredientsArray.forEach((ingredient, index) => {
+        const newIngredient = document.createElement('div');
+        newIngredient.className = 'flex gap-2 ingredient-input';
+        newIngredient.innerHTML = `
+            <input 
+                type="text" 
+                name="ingredients[]" 
+                required 
+                placeholder="Nom de l'ingrédient"
+                value="${ingredient.trim()}"
+                class="flex-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            >
+            ${index > 0 ? `
+            <button type="button" onclick="this.parentElement.remove()" class="btn-hover-effect cursor-pointer px-3 py-2 text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+            ` : ''}
+        `;
+        container.appendChild(newIngredient);
+    });
+    
+    // Réinitialiser l'aperçu de l'image
+    document.getElementById('updateImagePreview').classList.add('hidden');
+    document.getElementById('updateUploadPlaceholder').classList.remove('hidden');
+    document.getElementById('updateImage').value = '';
+    
+    document.getElementById('updateModal').classList.remove('hidden');
+}
+
+function closeUpdateModal() {
+    document.getElementById('updateModal').classList.add('hidden');
+}
+
+// Fonctions spécifiques pour le formulaire de modification
+function previewUpdateImage(event) {
+    previewImageHandler(event, 'updateImagePreview', 'updateUploadPlaceholder', 'updatePreviewImg');
+}
+
+function addUpdateIngredient() {
+    addIngredientHandler('updateIngredientsContainer');
+}
+
+// Fermer le modal en cliquant à l'extérieur
+document.getElementById('updateModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeUpdateModal();
+    }
+});
+
+// Validation du formulaire de modification
+document.getElementById('updateForm').addEventListener('submit', function(e) {
+    if (!validateIngredientsForm(this)) {
+        e.preventDefault();
+    }
+});
+
+// Fonction de confirmation de suppression avec SweetAlert2
+function confirmDelete(event, itemType) {
+    event.preventDefault();
+    Swal.fire({
+        title: 'Êtes-vous sûr ?',
+        text: `Voulez-vous vraiment supprimer cet ${itemType} ?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Oui, supprimer',
+        cancelButtonText: 'Annuler'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            event.target.submit();
+        }
+    });
+    return false;
+}
+</script>

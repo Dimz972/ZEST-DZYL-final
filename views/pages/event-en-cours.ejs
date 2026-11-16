@@ -1,0 +1,152 @@
+<section class="bg-gray-50 py-8 antialiased dark:bg-gray-900 md:py-12">
+  <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
+    <h1 class="text-3xl font-bold text-center mb-8 text-blue-600">Événements en cours</h1>
+    
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden p-8">
+      <% if (userEvents && userEvents.length > 0) { %>
+        <% userEvents.forEach(function(eventData) { %>
+          <div class="grid md:grid-cols-2 gap-6 mb-6">
+            <div class="space-y-4">
+              <h2 class="text-xl font-semibold text-gray-800">Informations de l'événement</h2>
+              <div class="bg-gray-50 rounded-lg p-4 space-y-2">
+                <p class="text-gray-700">
+                  <strong class="text-gray-900">Titre :</strong>
+                  <%= eventData.event.title %>
+                </p>
+                <p class="text-gray-700">
+                  <strong class="text-gray-900">Date :</strong>
+                  <%= new Date(eventData.event.date).toLocaleDateString('fr-FR', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  }) %>
+                </p>
+                <p class="text-gray-700">
+                  <strong class="text-gray-900">Heure :</strong>
+                  <%= eventData.event.startTime %> - <%= eventData.event.endTime %>
+                </p>
+                <p class="text-gray-700">
+                  <strong class="text-gray-900">Lieu :</strong>
+                  <%= eventData.event.location %>
+                </p>
+                <p class="text-gray-700">
+                  <strong class="text-gray-900">Prix :</strong>
+                  <%= eventData.event.price %> € par personne
+                </p>
+                <p class="text-gray-700">
+                  <strong class="text-gray-900">Places réservées :</strong>
+                  <%= eventData.reservationCount %> place<%= eventData.reservationCount > 1 ? 's' : '' %>
+                </p>
+                <p class="text-gray-700">
+                  <strong class="text-gray-900">Catégorie :</strong>
+                  <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset bg-blue-50 text-blue-700 ring-blue-600/20">
+                    <%= eventData.event.category.charAt(0).toUpperCase() + eventData.event.category.slice(1) %>
+                  </span>
+                </p>
+                <p class="text-gray-700">
+                  <strong class="text-gray-900">Statut :</strong>
+                  <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset bg-green-50 text-green-700 ring-green-600/20">
+                    ✓ Inscrit
+                  </span>
+                </p>
+                <% if (eventData.registrationDate) { %>
+                <p class="text-gray-700 text-sm">
+                  <strong class="text-gray-900">Inscrit le :</strong>
+                  <%= new Date(eventData.registrationDate).toLocaleDateString('fr-FR') %>
+                </p>
+                <% } %>
+              </div>
+            </div>
+            
+            <div class="space-y-4">
+              <h2 class="text-xl font-semibold text-gray-800">Détails de l'événement</h2>
+              <div class="p-6 space-y-4">
+                <div class="flex items-center space-x-3">
+                  <div class="flex-shrink-0">
+                    <div class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 text-blue-600">
+                      🎉
+                    </div>
+                  </div>
+                  <div>
+                    <p class="text-sm font-medium text-gray-900"><%= eventData.event.title %></p>
+                    <p class="text-sm text-gray-600"><%= eventData.event.category %></p>
+                  </div>
+                </div>
+                
+                <div class="border-t border-blue-200 pt-4">
+                  <h3 class="text-sm font-semibold text-gray-900 mb-2">📍 Lieu</h3>
+                  <p class="text-sm text-gray-700"><%= eventData.event.location %></p>
+                </div>
+                
+                <div class="border-t border-blue-200 pt-4">
+                  <h3 class="text-sm font-semibold text-gray-900 mb-2">👥 Participants</h3>
+                  <p class="text-sm text-gray-700">
+                    <%= eventData.event.currentParticipants %>/<%= eventData.event.maxParticipants %> participants
+                  </p>
+                </div>
+                
+                <% if (eventData.event.description) { %>
+                <div class="border-t border-blue-200 pt-4">
+                  <h3 class="text-sm font-semibold text-gray-900 mb-2">📋 Description</h3>
+                  <div class="bg-white rounded-lg p-3">
+                    <p class="text-xs text-gray-600">
+                      <%= eventData.event.description %>
+                    </p>
+                  </div>
+                </div>
+                <% } %>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-4 justify-center mb-6">
+            <% 
+              const eventDate = new Date(eventData.event.date);
+              const today = new Date();
+              const isPastEvent = eventDate < today;
+            %>
+            
+            <% if (!isPastEvent) { %>
+            <form action="/events/<%= eventData.event._id %>/cancel/<%= user.sub %>?_method=DELETE" method="POST" class="inline-block">
+              <button
+                type="submit"
+                onclick="return confirm('Êtes-vous sûr de vouloir annuler votre inscription à cet événement ?')"
+                class="w-full sm:w-auto px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+              >
+                Annuler l'inscription
+              </button>
+            </form>
+            <% } %>
+
+            <a
+              href="/events"
+              class="w-full sm:w-auto px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium text-center"
+            >
+              Retour aux événements
+            </a>
+          </div>
+
+          <% if (userEvents.indexOf(eventData) < userEvents.length - 1) { %>
+            <hr class="my-8 border-gray-200">
+          <% } %>
+        <% }) %>
+
+      <% } else { %>
+        <div class="text-center py-12">
+          <div class="mb-6">
+            <span class="text-6xl">🎉</span>
+          </div>
+          <h2 class="text-2xl font-semibold text-gray-600 mb-4">Aucun événement en cours</h2>
+          <p class="text-gray-500 mb-6">Vous n'êtes inscrit(e) à aucun événement pour le moment.</p>
+          <a
+            href="/events"
+            class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+          >
+            Découvrir nos événements
+          </a>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</section>

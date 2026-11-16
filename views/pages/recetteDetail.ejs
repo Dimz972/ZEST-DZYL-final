@@ -1,0 +1,122 @@
+
+<section class="bg-gray-50 py-8 antialiased dark:bg-gray-900 md:py-12">
+    <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
+       <a href="/recettes" class="btn-hover-effect font-medium inline-flex items-center text-white px-4 py-2 rounded-lg mb-6 bg-green-700 hover:bg-green-800">
+         <i class="fas fa-arrow-left mr-2"></i> Retour aux recettes
+       </a>
+        
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <% if (recette.image) { %>
+                <img src="<%= recette.image %>" alt="<%= recette.name %>" class="w-full h-64 object-cover">
+            <% } %>
+            
+            <div class="p-8">
+                <h1 class="text-3xl font-bold text-gray-800 mb-4"><%= recette.name %></h1>
+                
+                <div class="flex flex-wrap gap-4 mb-6">
+                    <div class="flex items-center text-gray-600">
+                        <i class="fas fa-clock mr-2"></i>
+                        <span>Préparation: <%= recette.preparationTime %> min</span>
+                    </div>
+                    <div class="flex items-center text-gray-600">
+                        <i class="fas fa-fire mr-2"></i>
+                        <span>Cuisson: <%= recette.cookingTime %> min</span>
+                    </div>
+                    <div class="flex items-center text-gray-600">
+                        <i class="fas fa-utensils mr-2"></i>
+                        <span><%= recette.servings %> personne(s)</span>
+                    </div>
+                    <div class="flex items-center text-gray-600">
+                        <i class="fas fa-signal mr-2"></i>
+                        <span><%= recette.difficulty %></span>
+                    </div>
+                </div>
+                
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <% if (recette.category) { %>
+                        <span class="px-3 py-1 bg-purple-100 text-purple-800 text-sm rounded-full">
+                            <%= recette.category %>
+                        </span>
+                    <% } %>
+                    <% if (recette.origin) { %>
+                        <span class="px-3 py-1 bg-yellow-100 text-yellow-800 text-sm rounded-full">
+                            <i class="fas fa-map-marker-alt mr-1"></i> <%= recette.origin %>
+                        </span>
+                    <% } %>
+                    <% if (recette.isVegetarian) { %>
+                        <span class="inline-flex items-center rounded bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-300">
+                            Végétarien 🌱
+                        </span>
+                    <% } %>
+                    <% if (recette.isSpicy) { %>
+                        <span class="inline-flex items-center rounded bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900 dark:text-red-300">
+                            Épicé 🌶️
+                        </span>
+                    <% } %>
+                </div>
+                
+                <% if (recette.description) { %>
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Description</h2>
+                        <p class="text-gray-600 leading-relaxed"><%= recette.description %></p>
+                    </div>
+                <% } %>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Ingrédients</h2>
+                        <ul class="space-y-2">
+                            <% if (recette.ingredients && recette.ingredients.length > 0) { %>
+                                <% recette.ingredients.forEach(ingredient => { %>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check text-green-600 mt-1 mr-3"></i>
+                                        <span class="text-gray-700"><%= ingredient %></span>
+                                    </li>
+                                <% }) %>
+                            <% } else { %>
+                                <li class="text-gray-500">Aucun ingrédient spécifié</li>
+                            <% } %>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Instructions</h2>
+                        <ol class="space-y-3">
+                            <% if (recette.instructions && recette.instructions.length > 0) { %>
+                                <% recette.instructions.forEach((instruction, index) => { %>
+                                    <li class="flex items-start">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-green-600 text-white text-sm rounded-full flex items-center justify-center mr-3 mt-0.5">
+                                            <%= index + 1 %>
+                                        </span>
+                                        <span class="text-gray-700"><%= instruction %></span>
+                                    </li>
+                                <% }) %>
+                            <% } else { %>
+                                <li class="text-gray-500">Aucune instruction spécifiée</li>
+                            <% } %>
+                        </ol>
+                    </div>
+                </div>
+                
+                <% if (recette.createdBy || recette.createdAt) { %>
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <p class="text-sm text-gray-500">
+                            <% if (recette.createdBy) { %>
+                                Recette créée par <span class="font-medium"><%= recette.createdBy.fname || recette.createdBy.email %></span>
+                            <% } else { %>
+                                Recette créée
+                            <% } %>
+                            <% if (recette.createdAt) { %>
+                                le <%= new Date(recette.createdAt).toLocaleDateString('fr-FR',
+                                    { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' }
+                                ) %>
+                            <% } %>
+                        </p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</section>
+
+
